@@ -1,0 +1,469 @@
+"use client"
+
+import type React from "react"
+
+import { useState, useEffect } from "react"
+import Navigation from "@/components/navigation"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Copy, Check, Download, Eye } from "lucide-react"
+
+interface CartItem {
+  id: number
+  name: string
+  price: number
+  quantity: number
+  image: string
+}
+
+interface Order {
+  id: string
+  items: CartItem[]
+  total: number
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  customerAddress?: string
+  deliveryType?: "delivery" | "pickup"
+  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
+  paymentMethod?: "vietqr" | "cash"
+  createdAt: string
+}
+
+const statusConfig: Record<string, { color: string; label: string; icon: string }> = {
+  pending: { color: "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-900", label: "Chờ xác nhận", icon: "⏳" },
+  confirmed: { color: "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-900", label: "Đã xác nhận", icon: "✅" },
+  shipped: { color: "bg-gradient-to-r from-purple-100 to-purple-200 text-purple-900", label: "Đang giao", icon: "📦" },
+  delivered: { color: "bg-gradient-to-r from-green-100 to-green-200 text-green-900", label: "Đã nhận", icon: "🎉" },
+  cancelled: { color: "bg-gradient-to-r from-red-100 to-red-200 text-red-900", label: "Đã huỷ", icon: "❌" },
+}
+
+export default function MyOrders() {
+  const [searchMode, setSearchMode] = useState<"list" | "search">("search")
+  const [orders, setOrders] = useState<Order[]>([])
+  const [searchPhone, setSearchPhone] = useState("")
+  const [searchOrderId, setSearchOrderId] = useState("")
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [copied, setCopied] = useState<string | null>(null)
+  const [filterStatus, setFilterStatus] = useState<"all" | keyof typeof statusConfig>("all")
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem("orders")
+    if (saved) {
+      setOrders(JSON.parse(saved))
+    }
+  }, [])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!searchPhone && !searchOrderId) {
+      alert("Vui lòng nhập số điện thoại hoặc mã đơn")
+      return
+    }
+
+    const found = orders.find(
+      (o) => (searchPhone && o.customerPhone.includes(searchPhone)) || (searchOrderId && o.id.includes(searchOrderId)),
+    )
+
+    if (found) {
+      setSelectedOrder(found)
+    } else {
+      alert("Không tìm thấy đơn hàng")
+      setSelectedOrder(null)
+    }
+  }
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(label)
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  const handleCancelOrder = () => {
+    if (!selectedOrder) return
+
+    const updatedOrders = orders.map((o) => (o.id === selectedOrder.id ? { ...o, status: "cancelled" as const } : o))
+
+    setOrders(updatedOrders)
+    localStorage.setItem("orders", JSON.stringify(updatedOrders))
+
+    const cancelledOrder = { ...selectedOrder, status: "cancelled" as const }
+    setSelectedOrder(cancelledOrder)
+    setShowCancelConfirm(false)
+
+    console.log("[v0] Order cancelled:", selectedOrder.id)
+  }
+
+  const handlePrintOrder = (order: Order) => {
+    const content = `
+HOÀN ĐƠN HÀNG - XUÂN TÌNH NGUYỆN 2026
+=====================================
+
+MÃ ĐƠN: ${order.id}
+Ngày tạo: ${new Date(order.createdAt).toLocaleString("vi-VN")}
+Trạng thái: ${statusConfig[order.status].label}
+
+THÔNG TIN NGƯỜI ỦNG HỘ:
+- Họ tên: ${order.customerName}
+- Số điện thoại: ${order.customerPhone}
+- Email: ${order.customerEmail || "Không có"}
+- Địa chỉ: ${order.customerAddress || "Lấy tại khoa"}
+
+DANH SÁCH SẢN PHẨM:
+${order.items.map((item) => `- ${item.name} x${item.quantity}: ${((item.price * item.quantity) / 1000).toFixed(0)}K`).join("\n")}
+
+TỔNG TIỀN: ${(order.total / 1000).toFixed(0)}K
+
+PHƯƠNG THỨC THANH TOÁN: ${order.paymentMethod === "vietqr" ? "VietQR" : "Tiền mặt"}
+
+=====================================
+Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
+    `
+
+    const blob = new Blob([content], { type: "text/plain" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${order.id}.txt`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const filteredOrders = orders.filter((o) => (filterStatus === "all" ? true : o.status === filterStatus))
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 font-sans">
+      <Navigation />
+
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 text-balance">Đơn hàng của tôi</h1>
+          <p className="text-lg text-gray-600">Theo dõi và quản lý các đơn hàng ủng hộ của bạn</p>
+        </div>
+
+        {/* Search Form */}
+        <div className="bg-white rounded-3xl shadow-xl p-8 border-2 border-blue-100 mb-12 animate-fade-in">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Tìm đơn hàng</h2>
+          <form onSubmit={handleSearch} className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">Số điện thoại</label>
+                <input
+                  type="tel"
+                  value={searchPhone}
+                  onChange={(e) => setSearchPhone(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all duration-300 text-gray-900"
+                  placeholder="0912345678"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">Mã đơn hàng</label>
+                <input
+                  type="text"
+                  value={searchOrderId}
+                  onChange={(e) => setSearchOrderId(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all duration-300 text-gray-900"
+                  placeholder="ORD-..."
+                />
+              </div>
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg"
+            >
+              Tìm kiếm
+            </Button>
+          </form>
+        </div>
+
+        {/* Selected Order Detail */}
+        {selectedOrder && (
+          <div className="bg-white rounded-3xl shadow-xl p-8 border-2 border-blue-100 mb-12 animate-fade-in">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Chi tiết đơn hàng</h2>
+                <p className="text-gray-600">{selectedOrder.id}</p>
+              </div>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold transition-all duration-300"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 mb-8">
+              {/* Status and Info */}
+              <div className="md:col-span-2">
+                <div className="mb-6">
+                  <Badge className={`${statusConfig[selectedOrder.status].color} text-base px-6 py-2 font-bold`}>
+                    {statusConfig[selectedOrder.status].icon} {statusConfig[selectedOrder.status].label}
+                  </Badge>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-6 mb-8">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Người ủng hộ</p>
+                    <p className="font-bold text-gray-900 text-lg">{selectedOrder.customerName}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Số điện thoại</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-gray-900 text-lg">{selectedOrder.customerPhone}</p>
+                      <button
+                        onClick={() => handleCopy(selectedOrder.customerPhone, "phone")}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        {copied === "phone" ? <Check size={18} /> : <Copy size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Email</p>
+                    <p className="font-medium text-gray-900">{selectedOrder.customerEmail || "Không có"}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Ngày đặt</p>
+                    <p className="font-medium text-gray-900">
+                      {new Date(selectedOrder.createdAt).toLocaleDateString("vi-VN")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Items */}
+                <div className="mb-8">
+                  <h3 className="font-bold text-xl text-gray-900 mb-4">Danh sách sản phẩm</h3>
+                  <div className="space-y-3">
+                    {selectedOrder.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-pink-50 rounded-xl border border-gray-200"
+                      >
+                        <div className="flex items-center gap-4">
+                          <span className="text-4xl">{item.image}</span>
+                          <div>
+                            <p className="font-semibold text-gray-900">{item.name}</p>
+                            <p className="text-sm text-gray-600">
+                              {(item.price / 1000).toFixed(0)}K × {item.quantity}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="font-bold text-blue-600 text-lg">
+                          {((item.price * item.quantity) / 1000).toFixed(0)}K
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Summary */}
+              <div className="bg-gradient-to-br from-blue-50 to-pink-50 rounded-2xl p-6 border-2 border-blue-200 h-fit">
+                <h3 className="font-bold text-xl text-gray-900 mb-6">Tóm tắt</h3>
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Tạm tính:</span>
+                    <span className="font-semibold text-gray-900">{(selectedOrder.total / 1000).toFixed(0)}K</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>Phí ship:</span>
+                    <span className="font-semibold text-gray-900">0đ</span>
+                  </div>
+                </div>
+                <div className="border-t-2 border-blue-300 pt-4 mb-6">
+                  <div className="flex justify-between">
+                    <span className="font-bold text-gray-900">Tổng tiền:</span>
+                    <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+                      {(selectedOrder.total / 1000).toFixed(0)}K
+                    </span>
+                  </div>
+                </div>
+                <div className="text-sm text-gray-600 mb-6">
+                  <p className="font-medium mb-2">Phương thức:</p>
+                  <p className="font-bold text-gray-900">
+                    {selectedOrder.paymentMethod === "vietqr" ? "VietQR 🏦" : "Tiền mặt 💵"}
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => handlePrintOrder(selectedOrder)}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <Download size={18} />
+                    In đơn hàng
+                  </Button>
+
+                  {selectedOrder.status === "pending" && (
+                    <Button
+                      onClick={() => setShowCancelConfirm(true)}
+                      className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2 rounded-lg transition-all duration-300"
+                    >
+                      Huỷ đơn hàng
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Cancel Confirmation Modal */}
+            {showCancelConfirm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl animate-fade-in">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Xác nhận huỷ đơn?</h3>
+                  <p className="text-gray-600 mb-8">
+                    Bạn chắc chắn muốn huỷ đơn hàng <span className="font-bold text-gray-900">{selectedOrder.id}</span>?
+                    Hành động này không thể hoàn tác.
+                  </p>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => setShowCancelConfirm(false)}
+                      className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold py-2 rounded-lg transition-all duration-300"
+                    >
+                      Không
+                    </Button>
+                    <Button
+                      onClick={handleCancelOrder}
+                      className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2 rounded-lg transition-all duration-300"
+                    >
+                      Huỷ đơn
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedOrder.status === "pending" && !showCancelConfirm && (
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded text-yellow-800">
+                <p className="font-semibold">💡 Lưu ý:</p>
+                <p>
+                  Nếu vẫn chờ xác nhận, bạn có thể sao chép nội dung chuyển khoản và chuyển lại để đảm bảo. Hoặc huỷ đơn
+                  nếu không muốn tiếp tục.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* All Orders List */}
+        {!selectedOrder && orders.length > 0 && (
+          <div className="bg-white rounded-3xl shadow-xl p-8 border-2 border-blue-100 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Lịch sử đơn hàng</h2>
+
+            {/* Status Filter */}
+            <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
+              {[
+                { value: "all", label: "Tất cả" },
+                { value: "pending", label: "Chờ xác nhận" },
+                { value: "confirmed", label: "Đã xác nhận" },
+                { value: "shipped", label: "Đang giao" },
+                { value: "delivered", label: "Đã nhận" },
+                { value: "cancelled", label: "Đã huỷ" },
+              ].map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => setFilterStatus(f.value as any)}
+                  className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${
+                    filterStatus === f.value
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            {filteredOrders.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-5xl mb-4">📭</p>
+                <p className="text-gray-600 text-lg">Không có đơn hàng nào</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredOrders.map((order) => (
+                  <button
+                    key={order.id}
+                    onClick={() => setSelectedOrder(order)}
+                    className="w-full text-left p-6 bg-gradient-to-r from-blue-50 to-pink-50 rounded-xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all duration-300 hover:scale-102"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <p className="font-bold text-lg text-gray-900">{order.id}</p>
+                          <Badge className={statusConfig[order.status].color}>{statusConfig[order.status].label}</Badge>
+                        </div>
+                        <div className="grid sm:grid-cols-3 gap-4 text-sm text-gray-600">
+                          <div>
+                            <p className="text-gray-500">Người đặt</p>
+                            <p className="font-semibold text-gray-900">{order.customerName}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Ngày đặt</p>
+                            <p className="font-semibold text-gray-900">
+                              {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Số sản phẩm</p>
+                            <p className="font-semibold text-gray-900">{order.items.length} mục</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right ml-4">
+                        <p className="text-gray-500 text-sm">Tổng tiền</p>
+                        <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+                          {(order.total / 1000).toFixed(0)}K
+                        </p>
+                        <Eye size={20} className="text-blue-600 mt-2 ml-auto" />
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {orders.length === 0 && !selectedOrder && (
+          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border-2 border-blue-100 animate-fade-in">
+            <p className="text-6xl mb-4">📦</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Chưa có đơn hàng</h2>
+            <p className="text-gray-600 mb-8 text-lg">
+              Bạn chưa đặt hàng nào. Hãy ghé thăm cửa hàng để ủng hộ chiến dịch!
+            </p>
+            <Link href="/checkout">
+              <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg">
+                Đi đến cửa hàng
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+        .hover\:scale-102:hover {
+          transform: scale(1.02);
+        }
+      `}</style>
+    </main>
+  )
+}
