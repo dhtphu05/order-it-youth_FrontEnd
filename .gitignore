@@ -27,3 +27,7 @@ yarn-error.log*
 next-env.d.ts
 
 pnpm-workspace.yaml
+
+# orval generated clients
+lib/api/generated
+lib/api/generated/**

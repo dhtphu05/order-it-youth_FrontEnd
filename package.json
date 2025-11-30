@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "concurrently -k -n \"next,orval\" -c \"green,cyan\" \"pnpm dev:next\" \"pnpm orval:watch\"",
+    "dev": "pnpm orval && next dev",
     "dev:next": "next dev",
     "lint": "eslint .",
     "start": "next start",
