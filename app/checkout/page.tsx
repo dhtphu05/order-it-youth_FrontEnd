@@ -2,18 +2,11 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import Navigation from "@/components/navigation"
 import { ChevronRight, Copy, Check, Trash2, Home, ShoppingCart } from "lucide-react"
-
-interface CartItem {
-  id: number
-  name: string
-  price: number
-  quantity: number
-  image: string
-}
+import { useCart } from "@/hooks/useCart"
 
 interface CheckoutData {
   name: string
@@ -26,7 +19,6 @@ interface CheckoutData {
 
 export default function Checkout() {
   const [step, setStep] = useState(1)
-  const [cart, setCart] = useState<CartItem[]>([])
   const [formData, setFormData] = useState<CheckoutData>({
     name: "",
     phone: "",
@@ -39,34 +31,22 @@ export default function Checkout() {
   const [copied, setCopied] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const [orderConfirmed, setOrderConfirmed] = useState(false)
+  const { cart, removeItem, updateQuantity, clearCart, totalPrice } = useCart()
 
-  useEffect(() => {
-    const saved = localStorage.getItem("cart")
-    if (saved) {
-      const parsedCart = JSON.parse(saved)
-      setCart(parsedCart)
-    }
-  }, [])
-
-  const handleRemoveFromCart = (productId: number) => {
-    const updatedCart = cart.filter((item) => item.id !== productId)
-    setCart(updatedCart)
-    localStorage.setItem("cart", JSON.stringify(updatedCart))
-    window.dispatchEvent(new CustomEvent("cart-updated"))
+  const handleRemoveFromCart = (productId: string) => {
+    removeItem(productId)
   }
 
-  const handleUpdateQuantity = (productId: number, newQuantity: number) => {
+  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      handleRemoveFromCart(productId)
+      removeItem(productId)
       return
     }
-    const updatedCart = cart.map((item) => (item.id === productId ? { ...item, quantity: newQuantity } : item))
-    setCart(updatedCart)
-    localStorage.setItem("cart", JSON.stringify(updatedCart))
-    window.dispatchEvent(new CustomEvent("cart-updated"))
+
+    updateQuantity(productId, newQuantity)
   }
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = totalPrice
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text)
@@ -126,9 +106,7 @@ export default function Checkout() {
       setShowConfetti(true)
 
       // Clear cart after saving order
-      localStorage.setItem("cart", JSON.stringify([]))
-      setCart([])
-      window.dispatchEvent(new CustomEvent("cart-updated"))
+      clearCart()
       window.dispatchEvent(new CustomEvent("order-completed", { detail: newOrder }))
 
       setOrderConfirmed(true)
@@ -148,9 +126,7 @@ export default function Checkout() {
     setOrderConfirmed(true)
 
     // Clear cart after saving order
-    localStorage.setItem("cart", JSON.stringify([]))
-    setCart([])
-    window.dispatchEvent(new CustomEvent("cart-updated"))
+    clearCart()
     window.dispatchEvent(new CustomEvent("order-completed", { detail: newOrder }))
 
     setTimeout(() => setStep(4), 800)

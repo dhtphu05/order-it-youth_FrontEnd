@@ -4,6 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ShoppingCart, Check } from "lucide-react"
+import { useCart } from "@/hooks/useCart"
+import type { CartItem } from "@/types/cart"
 
 export default function Marketplace() {
   const [products] = useState([
@@ -42,27 +44,33 @@ export default function Marketplace() {
   ])
 
   const [addedProduct, setAddedProduct] = useState<number | null>(null)
+  const { cart, addItem, updateQuantity } = useCart()
 
   const handleAddToCart = (productId: number) => {
     const product = products.find((p) => p.id === productId)
     if (!product) return
 
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]")
-    const existing = cart.find((item: any) => item.id === productId)
+    const formattedId = String(product.id)
+    const existing = cart.find((item) => item.id === formattedId)
 
     if (existing) {
-      existing.quantity += 1
+      updateQuantity(formattedId, existing.quantity + 1)
     } else {
-      cart.push({ ...product, quantity: 1 })
-    }
+      const newItem: CartItem = {
+        id: formattedId,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.image,
+        clientPriceVnd: product.price,
+        priceVersion: 1,
+      }
 
-    localStorage.setItem("cart", JSON.stringify(cart))
+      addItem(newItem)
+    }
 
     setAddedProduct(productId)
     setTimeout(() => setAddedProduct(null), 2000)
-
-    const event = new CustomEvent("cart-updated", { detail: { productId, quantity: existing ? existing.quantity : 1 } })
-    window.dispatchEvent(event)
   }
 
   return (
