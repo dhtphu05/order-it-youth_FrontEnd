@@ -119,9 +119,6 @@ export default function Checkout() {
       })
 
       clearCart()
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("cart-updated"))
-      }
 
       setPaymentMethod(paymentMethodParam === "VIETQR" ? "vietqr" : "cash")
 
@@ -501,7 +498,19 @@ export default function Checkout() {
                       Đang tải thông tin thanh toán...
                     </p>
                     {isSubmitting && <p className="text-sm text-foreground">Đang kết nối đến hệ thống...</p>}
+                    {!isSubmitting && !apiError && (
+                      <p className="text-sm text-muted-foreground">Không tải được thông tin, vui lòng thử lại hoặc quay lại bước trước.</p>
+                    )}
                     {apiError && <p className="text-sm text-red-500">{apiError}</p>}
+                    {backendOrder && !isSubmitting && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fetchPaymentIntent(backendOrder.code)}
+                      >
+                        Thử lại
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <>
