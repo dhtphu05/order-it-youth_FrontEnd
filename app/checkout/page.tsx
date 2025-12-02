@@ -10,6 +10,7 @@ import { useCart } from "@/hooks/useCart"
 import { useCheckoutApi } from "@/hooks/useCheckoutApi"
 import type { CheckoutFormData } from "@/types/checkout"
 import type { CartItem } from "@/types/cart"
+import type { LocalOrder, LocalOrderStatus } from "@/types/order"
 import type { OrderResponseDto } from "@/lib/api/generated/models"
 
 const FULFILLMENT_TYPE_MAP = {
@@ -160,23 +161,6 @@ export default function Checkout() {
     }
     console.log(" Step 1 validation passed, moving to step 2")
     setStep(2)
-  }
-
-  type LocalOrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
-
-  interface LocalOrder {
-    id: string
-    backendCode?: string
-    items: CartItem[]
-    total: number
-    customerName: string
-    customerEmail: string
-    customerPhone: string
-    customerAddress?: string
-    deliveryType?: "delivery" | "pickup"
-    status: LocalOrderStatus
-    paymentMethod?: "vietqr" | "cash"
-    createdAt: string
   }
 
   type SaveOrderParams = {

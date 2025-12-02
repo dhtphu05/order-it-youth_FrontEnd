@@ -2,34 +2,14 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Navigation from "@/components/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Copy, Check, Download, Eye } from "lucide-react"
-
-interface CartItem {
-  id: number
-  name: string
-  price: number
-  quantity: number
-  image: string
-}
-
-interface Order {
-  id: string
-  items: CartItem[]
-  total: number
-  customerName: string
-  customerEmail: string
-  customerPhone: string
-  customerAddress?: string
-  deliveryType?: "delivery" | "pickup"
-  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
-  paymentMethod?: "vietqr" | "cash"
-  createdAt: string
-}
+import { useMyOrders } from "@/hooks/useMyOrders"
+import type { LocalOrder } from "@/types/order"
 
 const statusConfig: Record<string, { color: string; label: string; icon: string }> = {
   pending: { color: "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-900", label: "Chờ xác nhận", icon: "⏳" },
@@ -41,20 +21,13 @@ const statusConfig: Record<string, { color: string; label: string; icon: string 
 
 export default function MyOrders() {
   const [searchMode, setSearchMode] = useState<"list" | "search">("search")
-  const [orders, setOrders] = useState<Order[]>([])
+  const { orders, setOrders, isLoading, error, reload } = useMyOrders()
   const [searchPhone, setSearchPhone] = useState("")
   const [searchOrderId, setSearchOrderId] = useState("")
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [selectedOrder, setSelectedOrder] = useState<LocalOrder | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<"all" | keyof typeof statusConfig>("all")
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-
-  useEffect(() => {
-    const saved = localStorage.getItem("orders")
-    if (saved) {
-      setOrders(JSON.parse(saved))
-    }
-  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,7 +60,6 @@ export default function MyOrders() {
     const updatedOrders = orders.map((o) => (o.id === selectedOrder.id ? { ...o, status: "cancelled" as const } : o))
 
     setOrders(updatedOrders)
-    localStorage.setItem("orders", JSON.stringify(updatedOrders))
 
     const cancelledOrder = { ...selectedOrder, status: "cancelled" as const }
     setSelectedOrder(cancelledOrder)
@@ -96,7 +68,7 @@ export default function MyOrders() {
     console.log("[v0] Order cancelled:", selectedOrder.id)
   }
 
-  const handlePrintOrder = (order: Order) => {
+  const handlePrintOrder = (order: LocalOrder) => {
     const content = `
 HOÀN ĐƠN HÀNG - XUÂN TÌNH NGUYỆN 2026
 =====================================
@@ -143,6 +115,13 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 text-balance">Đơn hàng của tôi</h1>
           <p className="text-lg text-gray-600">Theo dõi và quản lý các đơn hàng ủng hộ của bạn</p>
+          <div className="flex flex-wrap items-center gap-3 mt-4">
+            {isLoading && <span className="text-sm text-gray-500">Đang tải đơn hàng...</span>}
+            {error && <span className="text-sm text-red-500">{error}</span>}
+            <Button variant="outline" size="sm" onClick={reload}>
+              Làm mới
+            </Button>
+          </div>
         </div>
 
         {/* Search Form */}
