@@ -15,4 +15,8 @@ export interface LocalOrder {
   status: LocalOrderStatus
   paymentMethod?: "vietqr" | "cash"
   createdAt: string
+  backendMeta?: {
+    payment_status?: string
+    order_status?: string
+  }
 }

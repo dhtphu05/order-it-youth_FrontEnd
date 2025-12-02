@@ -4,12 +4,12 @@ import type React from "react"
 
 import { useState } from "react"
 import Navigation from "@/components/navigation"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Copy, Check, Download, Eye } from "lucide-react"
 import { useMyOrders } from "@/hooks/useMyOrders"
 import type { LocalOrder } from "@/types/order"
+import { mapOrderStatusToBadge, mapPaymentStatusToBadge } from "@/lib/order-status"
 
 const statusConfig: Record<string, { color: string; label: string; icon: string }> = {
   pending: { color: "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-900", label: "Chờ xác nhận", icon: "⏳" },
@@ -26,8 +26,26 @@ export default function MyOrders() {
   const [searchOrderId, setSearchOrderId] = useState("")
   const [selectedOrder, setSelectedOrder] = useState<LocalOrder | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
-  const [filterStatus, setFilterStatus] = useState<"all" | keyof typeof statusConfig>("all")
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "PAID" | "FULFILLING" | "FULFILLED" | "CANCELLED">(
+    "ALL",
+  )
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+
+  const resolveOrderStatus = (order: LocalOrder) =>
+    order.backendMeta?.order_status?.toUpperCase() ?? order.status?.toUpperCase() ?? "UNKNOWN"
+
+  const resolvePaymentStatus = (order: LocalOrder) => {
+    if (order.backendMeta?.payment_status) {
+      return order.backendMeta.payment_status
+    }
+    if (order.paymentMethod === "cash") {
+      return "CASH"
+    }
+    if (order.status === "delivered" || order.status === "confirmed") {
+      return "SUCCESS"
+    }
+    return "PENDING"
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -105,7 +123,12 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
     URL.revokeObjectURL(url)
   }
 
-  const filteredOrders = orders.filter((o) => (filterStatus === "all" ? true : o.status === filterStatus))
+  const filteredOrders = orders.filter((o) => {
+    if (statusFilter === "ALL") {
+      return true
+    }
+    return resolveOrderStatus(o) === statusFilter
+  })
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 font-sans">
@@ -178,10 +201,21 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
             <div className="grid md:grid-cols-3 gap-8 mb-8">
               {/* Status and Info */}
               <div className="md:col-span-2">
-                <div className="mb-6">
-                  <Badge className={`${statusConfig[selectedOrder.status].color} text-base px-6 py-2 font-bold`}>
-                    {statusConfig[selectedOrder.status].icon} {statusConfig[selectedOrder.status].label}
-                  </Badge>
+                <div className="mb-6 flex flex-wrap gap-2">
+                  {(() => {
+                    const paymentBadge = mapPaymentStatusToBadge(resolvePaymentStatus(selectedOrder))
+                    const orderBadge = mapOrderStatusToBadge(resolveOrderStatus(selectedOrder))
+                    return (
+                      <>
+                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${paymentBadge.colorClass}`}>
+                          {paymentBadge.label}
+                        </span>
+                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${orderBadge.colorClass}`}>
+                          {orderBadge.label}
+                        </span>
+                      </>
+                    )
+                  })()}
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-6 mb-8">
@@ -337,18 +371,18 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
             {/* Status Filter */}
             <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
               {[
-                { value: "all", label: "Tất cả" },
-                { value: "pending", label: "Chờ xác nhận" },
-                { value: "confirmed", label: "Đã xác nhận" },
-                { value: "shipped", label: "Đang giao" },
-                { value: "delivered", label: "Đã nhận" },
-                { value: "cancelled", label: "Đã huỷ" },
+                { value: "ALL", label: "Tất cả" },
+                { value: "PENDING", label: "Chờ xử lý" },
+                { value: "PAID", label: "Đã thanh toán" },
+                { value: "FULFILLING", label: "Đang giao" },
+                { value: "FULFILLED", label: "Hoàn tất" },
+                { value: "CANCELLED", label: "Đã huỷ" },
               ].map((f) => (
                 <button
                   key={f.value}
-                  onClick={() => setFilterStatus(f.value as any)}
+                  onClick={() => setStatusFilter(f.value as any)}
                   className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${
-                    filterStatus === f.value
+                    statusFilter === f.value
                       ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
@@ -375,7 +409,24 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <p className="font-bold text-lg text-gray-900">{order.id}</p>
-                          <Badge className={statusConfig[order.status].color}>{statusConfig[order.status].label}</Badge>
+                          {(() => {
+                            const paymentBadge = mapPaymentStatusToBadge(resolvePaymentStatus(order))
+                            const orderBadge = mapOrderStatusToBadge(resolveOrderStatus(order))
+                            return (
+                              <div className="flex gap-2">
+                                <span
+                                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${paymentBadge.colorClass}`}
+                                >
+                                  {paymentBadge.label}
+                                </span>
+                                <span
+                                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${orderBadge.colorClass}`}
+                                >
+                                  {orderBadge.label}
+                                </span>
+                              </div>
+                            )
+                          })()}
                         </div>
                         <div className="grid sm:grid-cols-3 gap-4 text-sm text-gray-600">
                           <div>

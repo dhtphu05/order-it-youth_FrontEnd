@@ -213,6 +213,12 @@ export default function Checkout() {
       status,
       paymentMethod,
       createdAt,
+      backendMeta: backendOrder
+        ? {
+            payment_status: backendOrder.payment_status,
+            order_status: backendOrder.order_status,
+          }
+        : undefined,
     }
 
     orders.unshift(localOrder)
