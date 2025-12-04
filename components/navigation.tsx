@@ -35,13 +35,13 @@ export default function Navigation() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <Link href="#activities" className="text-gray-700 hover:text-blue-600 transition">
+            <Link href="/#activities" className="text-gray-700 hover:text-blue-600 transition">
               Hoạt động
             </Link>
-            <Link href="#transparency" className="text-gray-700 hover:text-blue-600 transition">
+            <Link href="/#transparency" className="text-gray-700 hover:text-blue-600 transition">
               Minh bạch
             </Link>
-            <Link href="#marketplace" className="text-gray-700 hover:text-blue-600 transition">
+            <Link href="/#marketplace" className="text-gray-700 hover:text-blue-600 transition">
               Cửa hàng
             </Link>
             <Link href="/my-orders" className="text-gray-700 hover:text-blue-600 transition">

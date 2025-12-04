@@ -1,0 +1,43 @@
+name: Deploy FE Shop
+
+on:
+  push:
+    branches:
+      - main   
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to GCP via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          # Nếu key có passphrase:
+          # passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            set -e
+
+            echo ">>> Pull FE shop code"
+            cd /home/dhtphu05/order-it-youth_FrontEnd
+            git pull origin main
+
+            echo ">>> Ensure pnpm available"
+            if ! command -v pnpm >/dev/null 2>&1; then
+              corepack enable
+            fi
+
+            echo ">>> Install deps & generate orval"
+            pnpm install --frozen-lockfile
+            pnpm orval
+
+            echo ">>> Build & restart fe-shop container"
+            cd /home/dhtphu05
+            docker compose build fe-shop
+            docker compose up -d fe-shop
+
+            echo ">>> Cleanup old images"
+            docker image prune -f
