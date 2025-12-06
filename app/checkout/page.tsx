@@ -584,7 +584,7 @@ export default function Checkout() {
             {/* Step 3: VietQR Payment */}
             {step === 3 && (
               <div className="card-premium rounded-2xl shadow-elevated p-8 animate-fadeInUp bg-white">
-                <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Quét VietQR để ủng hộ</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Quét VietQR để thanh toán</h2>
                 {backendOrder && (
                   <p className="text-center text-sm text-muted-foreground mb-4">
                     Mã đơn hàng: <span className="font-semibold text-foreground">{backendOrder.code}</span>
@@ -665,12 +665,13 @@ export default function Checkout() {
                       )
                     })()}
 
-                    <div className="text-center text-sm text-muted-foreground mb-6 space-y-1">
-                      <p>Quét mã QR bằng ứng dụng ngân hàng hỗ trợ VietQR để điền sẵn thông tin.</p>
-                      <p>
+                    <div className="text-left text-sm text-muted-foreground mb-6 space-y-1">
+                      <p>Chúng mình xin chân thành cảm ơn sự ủng hộ và tấm lòng sẻ chia vô cùng quý báu của bạn. Mỗi đóng góp của bạn là nguồn động lực lớn lao, giúp chúng mình luôn vững bước trên hành trình lan tỏa giá trị.</p>
+                      <p>Chúng mình sẽ gửi email xác nhận đã chuyển khoản thành công về mail cho bạn. Cảm ơn bạn đã đồng hành và tin tưởng ủng hộ!!!</p>
+                      {/* <p>
                         Nội dung chuyển khoản:{" "}
                         <span className="font-semibold">{paymentIntent.transfer_content}</span>
-                      </p>
+                      </p> */}
                     </div>
 
                     <div className="space-y-4 mb-8">
@@ -741,14 +742,14 @@ export default function Checkout() {
                       >
                         ✓ Mình đã chuyển khoản
                       </Button>
-                      <div className="flex gap-3">
+                      {/* <div className="flex gap-3">
                         <button className={`flex-1 font-semibold py-2 rounded-lg transition-all duration-300 text-[${COLOR_PRIMARY}] hover:bg-[${COLOR_PRIMARY}10]`}>
                           Lưu mã QR
                         </button>
                         <button className={`flex-1 font-semibold py-2 rounded-lg transition-all duration-300 text-[${COLOR_PRIMARY}] hover:bg-[${COLOR_PRIMARY}10]`}>
                           Sao chép tất cả
                         </button>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="mt-6 p-4 bg-muted/50 rounded-lg border border-border">
@@ -770,9 +771,9 @@ export default function Checkout() {
                   </>
                 )}
 
-                <Button onClick={() => setStep(2)} variant="outline" className="w-full mt-6 hover:bg-white hover:text-gray-900 hover:scale-105">
+                {/* <Button onClick={() => setStep(2)} variant="outline" className="w-full mt-6 hover:bg-white hover:text-gray-900 hover:scale-105">
                   Quay lại - Chọn phương thức khác
-                </Button>
+                </Button> */}
               </div>
             )}
 
@@ -811,7 +812,7 @@ export default function Checkout() {
                 <div className="bg-muted/30 rounded-lg p-6 mb-8 border border-border">
                   <h3 className="font-bold text-foreground mb-4">Tóm tắt đơn hàng</h3>
                   <div className="space-y-3 mb-4">
-                    {backendOrder ? (
+                    {backendOrder && backendOrder.items ? (
                       backendOrder.items.map((item, index) => (
                         <div key={`${item.title}-${index}`} className="flex justify-between text-foreground">
                           <span>
@@ -870,9 +871,25 @@ export default function Checkout() {
               <h3 className="text-2xl font-bold text-foreground mb-6">Đơn hàng</h3>
 
               <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
-                {cart.length === 0 ? (
+                {(step === 3 || step === 4) && backendOrder && backendOrder.items ? (
+                  backendOrder.items.map((item, index) => (
+                    <div key={`${item.title}-${index}`} className="flex justify-between items-start pb-4 border-b border-border">
+                      <div className="flex-1">
+                        <p className="font-semibold text-foreground">{item.title}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {(item.line_total_vnd / 1000 / item.quantity).toFixed(0)}K × {item.quantity}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span className={`font-bold text-[${COLOR_PRIMARY}]`}>
+                          {formatVnd(item.line_total_vnd)} đ
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : step <= 2 && cart.length === 0 ? (
                   <p className="text-muted-foreground text-center py-8">Giỏ trống</p>
-                ) : (
+                ) : step <= 2 ? (
                   cart.map((item) => (
                     <div key={item.id} className="flex justify-between items-start pb-4 border-b border-border">
                       <div className="flex-1">
@@ -910,18 +927,33 @@ export default function Checkout() {
                       </div>
                     </div>
                   ))
-                )}
+                ) : null}
               </div>
 
               <div className="border-t-2 border-border pt-4">
-                <div className="flex justify-between mb-2 text-muted-foreground">
-                  <span>Tạm tính:</span>
-                  <span>{(total / 1000).toFixed(0)}K</span>
-                </div>
-                <div className="flex justify-between font-bold text-lg text-foreground mb-6">
-                  <span>Tổng cộng:</span>
-                  <span className={`text-[${COLOR_PRIMARY}]`}>{(total / 1000).toFixed(0)}K</span>
-                </div>
+                {(step === 3 || step === 4) && backendOrder ? (
+                  <>
+                    <div className="flex justify-between mb-2 text-muted-foreground">
+                      <span>Tạm tính:</span>
+                      <span>{formatVnd(backendOrder.grand_total_vnd)} đ</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg text-foreground mb-6">
+                      <span>Tổng cộng:</span>
+                      <span className={`text-[${COLOR_PRIMARY}]`}>{formatVnd(backendOrder.grand_total_vnd)} đ</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex justify-between mb-2 text-muted-foreground">
+                      <span>Tạm tính:</span>
+                      <span>{(total / 1000).toFixed(0)}K</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg text-foreground mb-6">
+                      <span>Tổng cộng:</span>
+                      <span className={`text-[${COLOR_PRIMARY}]`}>{(total / 1000).toFixed(0)}K</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
