@@ -68,15 +68,14 @@ export default function Marketplace() {
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="rounded-2xl border-2 border-muted animate-pulse p-6 h-80"
-                style={{
-                  background: `linear-gradient(135deg, ${leaf}10, transparent)`
-                }}
+                className="rounded-2xl border border-gray-200 bg-gray-50 animate-pulse p-6 h-80 flex flex-col gap-4"
               >
-                <div className="h-32 bg-muted rounded-xl mb-4" />
-                <div className="h-4 bg-muted rounded mb-2" />
-                <div className="h-4 bg-muted rounded w-2/3" />
-                <div className="mt-6 h-10 rounded bg-gray-200" />
+                <div className="h-32 bg-gray-200 rounded-xl" />
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded" />
+                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+                </div>
+                <div className="mt-auto h-10 bg-gray-200 rounded" />
               </div>
             ))}
           </div>
@@ -103,33 +102,23 @@ export default function Marketplace() {
                   />
                 </div>
 
-                <div className="p-5">
-                  <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                    {product.description ?? "Sản phẩm gây quỹ IT Youth"}
-                  </p>
+                <h3 className="text-lg font-semibold text-foreground line-clamp-2">{product.name}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {product.description ?? "Sản phẩm gây quỹ IT Youth"}
+                </p>
 
-                  <div className="flex items-center justify-between mb-4">
-                    <span
-                      className="text-3xl font-bold bg-clip-text text-transparent"
-                      style={{
-                        backgroundImage: leaf
-                      }}
-                    >
-                      {(product.price / 1000).toFixed(0)}K
-                    </span>
-                    <span
-                      className="text-xs font-semibold px-3 py-1 rounded-full"
-                      style={{
-                        background: sand,
-                        // color: "#333"
-                      }}
-                    >
-                      Giá: {product.price}
-                    </span>
+                <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Giá</p>
+                    <p className="text-2xl font-bold text-gray-900">{formatPrice(product.price)}</p>
                   </div>
+                  <div className="text-right text-xs text-muted-foreground">
+                    <p>Đã thêm</p>
+                    <p className="text-base font-semibold text-foreground">
+                      {cart.find((item) => item.id === product.id)?.quantity ?? 0}
+                    </p>
+                  </div>
+                </div>
 
                 <Button
                   onClick={() => handleAddToCart(product.id)}
