@@ -80,7 +80,7 @@ export default function Marketplace() {
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="rounded-2xl border-2 border-muted animate-pulse p-6 h-[320px]"
+                className="rounded-2xl border-2 border-muted animate-pulse p-6 h-80"
                 style={{
                   background: `linear-gradient(135deg, ${leaf}10, transparent)`
                 }}
@@ -134,9 +134,9 @@ export default function Marketplace() {
                   <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">
                     {product.name}
                   </h3>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                  {/* <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                     {product.description ?? "Sản phẩm gây quỹ IT Youth"}
-                  </p>
+                  </p> */}
 
                   <div className="flex items-center justify-between mb-4">
                     <span
@@ -147,15 +147,15 @@ export default function Marketplace() {
                     >
                       {(product.price / 1000).toFixed(0)}K
                     </span>
-                    {/* <span
+                    <span
                       className="text-xs font-semibold px-3 py-1 rounded-full"
                       style={{
                         background: sand,
                         // color: "#333"
                       }}
                     >
-                      Còn: {product.stock}
-                    </span> */}
+                      Giá: {product.price}
+                    </span>
                   </div>
 
                   <Button
