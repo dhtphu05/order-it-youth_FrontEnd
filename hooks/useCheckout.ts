@@ -5,6 +5,7 @@ import { ordersControllerCheckout } from "@/lib/api/generated/endpoints/orderITY
 import type { CheckoutFormData } from "@/types/checkout"
 import type { CartItem } from "@/types/cart"
 import type { CheckoutOrderDto, ErrorResponseDto, OrderResponseDto } from "@/lib/api/generated/models"
+import { getReferralCode } from "@/lib/referral"
 
 const FULFILLMENT_TYPE_MAP = {
   delivery: "DELIVERY",
@@ -56,6 +57,7 @@ export function useCheckout() {
     setApiError(null)
 
     try {
+      const referralCode = getReferralCode()
       const payload: CheckoutOrderDto = {
         full_name: formData.name,
         phone: formData.phone,
@@ -66,6 +68,7 @@ export function useCheckout() {
         payment_method: paymentMethod,
         idem_scope: "checkout",
         idem_key: generateIdemKey(),
+        ...(referralCode ? { team_ref_code: referralCode } : {}),
         items: cart.map((item) => ({
           quantity: item.quantity,
           price_version: item.priceVersion ?? 1,

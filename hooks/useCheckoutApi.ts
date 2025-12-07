@@ -11,6 +11,7 @@ import type {
   OrderResponseDto,
   PaymentIntentResponseDto,
 } from "@/lib/api/generated/models"
+import { getReferralCode } from "@/lib/referral"
 
 const generateIdemKey = () => {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
@@ -39,8 +40,10 @@ export function useCheckoutApi() {
 
       try {
         const basePayload = buildPayload()
+        const referralCode = getReferralCode()
         const payload: CheckoutOrderDto = {
           ...basePayload,
+          ...(referralCode ? { team_ref_code: referralCode } : {}),
           idem_scope: "checkout",
           idem_key: generateIdemKey(),
         }
