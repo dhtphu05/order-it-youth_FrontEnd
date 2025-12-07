@@ -33,12 +33,10 @@ export default function MyOrders() {
   const [searchMode, setSearchMode] = useState<"list" | "search">("search")
   const { orders, setOrders, isLoading, error, reload } = useMyOrders()
   const [searchPhone, setSearchPhone] = useState("")
-  const [searchOrderId, setSearchOrderId] = useState("")
   const [selectedOrder, setSelectedOrder] = useState<LocalOrder | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "PAID" | "FULFILLING" | "FULFILLED" | "CANCELLED">(
-    "ALL",
-  )
+  const [searchResults, setSearchResults] = useState<LocalOrder[]>([])
+  const [hasSearched, setHasSearched] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
   const resolveOrderStatus = (order: LocalOrder) =>
@@ -59,20 +57,17 @@ export default function MyOrders() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    // NOTE: Cần thay thế alert() bằng UI modal tùy chỉnh
-    if (!searchPhone && !searchOrderId) {
-      alert("Vui lòng nhập số điện thoại hoặc mã đơn")
+    const normalizedPhone = searchPhone.replace(/\D/g, "")
+    if (!normalizedPhone) {
+      alert("Vui lòng nhập số điện thoại đã dùng để đặt hàng")
       return
     }
-
-    const found = orders.find(
-      (o) => (searchPhone && o.customerPhone.includes(searchPhone)) || (searchOrderId && o.id.includes(searchOrderId)),
-    )
-
-    if (found) {
-      setSelectedOrder(found)
+    const matches = orders.filter((o) => o.customerPhone.replace(/\D/g, "").includes(normalizedPhone))
+    setHasSearched(true)
+    setSearchResults(matches)
+    if (matches.length === 1) {
+      setSelectedOrder(matches[0])
     } else {
-      alert("Không tìm thấy đơn hàng")
       setSelectedOrder(null)
     }
   }
@@ -137,13 +132,6 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
     URL.revokeObjectURL(url)
   }
 
-  const filteredOrders = orders.filter((o) => {
-    if (statusFilter === "ALL") {
-      return true
-    }
-    return resolveOrderStatus(o) === statusFilter
-  })
-
   return (
     <main 
         className={`min-h-screen bg-white pt-20`}
@@ -167,27 +155,15 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
         <div className={`bg-white rounded-3xl shadow-xl p-8 border-2 border-[${COLOR_PRIMARY}20] mb-12 animate-fade-in`}>
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Tìm đơn hàng</h2>
           <form onSubmit={handleSearch} className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Số điện thoại</label>
-                <input
-                  type="tel"
-                  value={searchPhone}
-                  onChange={(e) => setSearchPhone(e.target.value)}
-                  className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[${COLOR_PRIMARY}] transition-all duration-300 text-gray-900`}
-                  placeholder="0912345678"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Mã đơn hàng</label>
-                <input
-                  type="text"
-                  value={searchOrderId}
-                  onChange={(e) => setSearchOrderId(e.target.value)}
-                  className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[${COLOR_PRIMARY}] transition-all duration-300 text-gray-900`}
-                  placeholder="ORD-..."
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Số điện thoại</label>
+              <input
+                type="tel"
+                value={searchPhone}
+                onChange={(e) => setSearchPhone(e.target.value)}
+                className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[${COLOR_PRIMARY}] transition-all duration-300 text-gray-900`}
+                placeholder="0912345678"
+              />
             </div>
             <Button
               type="submit"
@@ -201,14 +177,14 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
         {/* Selected Order Detail */}
         {selectedOrder && (
           <div className={`bg-white rounded-3xl shadow-xl p-8 border-2 border-[${COLOR_PRIMARY}20] mb-12 animate-fade-in`}>
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-8">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Chi tiết đơn hàng</h2>
-                <p className="text-gray-600">{selectedOrder.id}</p>
+                <p className="text-gray-600 break-words">{selectedOrder.id}</p>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="text-gray-500 hover:text-gray-700 text-2xl font-bold transition-all duration-300"
+                className="self-start sm:self-auto text-gray-500 hover:text-gray-700 text-2xl font-bold transition-all duration-300"
               >
                 ✕
               </button>
@@ -274,14 +250,13 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
                       >
                         <div className="flex items-center gap-4">
                           
-                          {/* */}
-                          <div className="w-12 h-12 relative flex-shrink-0">
+                          <div className="w-12 h-12 relative flex-shrink-0 overflow-hidden rounded-full">
                             <Image
-                              src={`/products/${item.image}.png`} 
+                              src={`/products/${item.image}.png`}
                               alt={item.name}
-                              layout="fill"
-                              objectFit="cover"
-                              className="rounded-full"
+                              fill
+                              sizes="48px"
+                              className="object-cover"
                             />
                           </div>
                           
@@ -328,114 +303,33 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
                     {selectedOrder.paymentMethod === "vietqr" ? "VietQR" : "Tiền mặt"}
                   </p>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => handlePrintOrder(selectedOrder)}
-                    className={`w-full bg-[${COLOR_PRIMARY}] hover:bg-[${COLOR_PRIMARY}e6] hover:scale-105 text-white font-semibold py-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-2`}
-                  >
-                    <Download size={18} />
-                    In đơn hàng
-                  </Button>
-
-                  {selectedOrder.status === "pending" && (
-                    <Button
-                      onClick={() => setShowCancelConfirm(true)}
-                      className={`w-full bg-white hover:bg-white hover:scale-105 text-gray-900 font-semibold py-2 rounded-lg transition-all duration-300`}
-                    >
-                      Huỷ đơn hàng
-                    </Button>
-                  )}
+              </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Cancel Confirmation Modal */}
-            {showCancelConfirm && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl animate-fade-in">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Xác nhận huỷ đơn?</h3>
-                  <p className="text-gray-600 mb-8">
-                    Bạn chắc chắn muốn huỷ đơn hàng <span className="font-bold text-gray-900">{selectedOrder.id}</span>?
-                    Hành động này không thể hoàn tác.
-                  </p>
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={() => setShowCancelConfirm(false)}
-                      className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 hover:scale-105 font-semibold py-2 rounded-lg transition-all duration-300"
-                    >
-                      Không
-                    </Button>
-                    <Button
-                      onClick={handleCancelOrder}
-                      className={`flex-1 bg-[${COLOR_PRIMARY}] hover:bg-[${COLOR_ACCENT}e6] hover:scale-105 text-white font-semibold py-2 rounded-lg transition-all duration-300`}
-                    >
-                      Huỷ đơn
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {selectedOrder.status === "pending" && !showCancelConfirm && (
-              <div className={`bg-[${COLOR_SECONDARY}50] border-l-4 border-[${COLOR_PRIMARY}] p-4 rounded text-gray-900`}>
-                <p className="font-semibold">💡 Lưu ý:</p>
-                <p>
-                  Nếu vẫn chờ xác nhận, bạn có thể sao chép nội dung chuyển khoản và chuyển lại để đảm bảo. Hoặc huỷ đơn
-                  nếu không muốn tiếp tục.
-                </p>
-              </div>
-            )}
           </div>
         )}
 
-        {/* All Orders List */}
-        {!selectedOrder && orders.length > 0 && (
+        {/* Search Results */}
+        {!selectedOrder && hasSearched && (
           <div className={`bg-white rounded-3xl shadow-xl p-8 border-2 border-[${COLOR_PRIMARY}20] animate-fade-in`}>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Lịch sử đơn hàng</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Kết quả theo số điện thoại</h2>
 
-            {/* Status Filter */}
-            <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
-              {[
-                { value: "ALL", label: "Tất cả" },
-                { value: "PENDING", label: "Chờ xử lý" },
-                { value: "PAID", label: "Đã thanh toán" },
-                { value: "FULFILLING", label: "Đang giao" },
-                { value: "FULFILLED", label: "Hoàn tất" },
-                { value: "CANCELLED", label: "Đã huỷ" },
-              ].map((f) => (
-                <button
-                  key={f.value}
-                  onClick={() => setStatusFilter(f.value as any)}
-                  className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${
-                    statusFilter === f.value
-                      ? `bg-[${COLOR_PRIMARY}] text-white shadow-lg`
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-
-            {filteredOrders.length === 0 ? (
+            {searchResults.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-5xl mb-4">📭</p>
-                <p className="text-gray-600 text-lg">Không có đơn hàng nào</p>
+                <p className="text-gray-600 text-lg">Không tìm thấy đơn hàng trùng khớp</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredOrders.map((order) => (
+                {searchResults.map((order) => (
                   <button
                     key={order.id}
                     onClick={() => setSelectedOrder(order)}
                     className={`w-full text-left p-6 bg-[${COLOR_BG}50] rounded-xl border-2 border-gray-200 hover:border-[${COLOR_PRIMARY}40] hover:shadow-lg transition-all duration-300 hover:scale-102`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
-                          <p className="font-bold text-lg text-gray-900">{order.id}</p>
+                          <p className="font-bold text-lg text-gray-900 break-words">{order.id}</p>
                           {(() => {
                             const paymentBadge = mapPaymentStatusToBadge(resolvePaymentStatus(order))
                             const orderBadge = mapOrderStatusToBadge(resolveOrderStatus(order))
@@ -472,11 +366,13 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
                           </div>
                         </div>
                       </div>
-                      <div className="text-right ml-4 flex flex-col items-end gap-2">
-                        <p className="text-gray-500 text-sm">Tổng tiền</p>
-                        <p className={`text-2xl font-bold text-[${COLOR_PRIMARY}]`}>
-                          {formatVnd(order.total)} đ
-                        </p>
+                      <div className="sm:text-right text-left flex flex-col sm:items-end gap-2">
+                        <div>
+                          <p className="text-gray-500 text-sm">Tổng tiền</p>
+                          <p className={`text-2xl font-bold text-[${COLOR_PRIMARY}]`}>
+                            {formatVnd(order.total)} đ
+                          </p>
+                        </div>
                         <Link
                           href={`/my-orders/${order.backendCode ?? order.id}`}
                           className={`text-sm text-[${COLOR_PRIMARY}] hover:underline inline-flex items-center gap-1`}

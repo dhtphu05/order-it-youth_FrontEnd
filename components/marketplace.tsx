@@ -8,16 +8,12 @@ import { useCart } from "@/hooks/useCart"
 import { useProducts } from "@/hooks/useProducts"
 import type { CartItem } from "@/types/cart"
 
-const leaf = "#A5C858"
-const peach = "#F5B1AC"
-const softlime = "#D3E281"
-const rose = "#FCE8E7"
-const sand = "#FCEDBE"
 
 export default function Marketplace() {
   const { products, isLoading, error, reload } = useProducts()
   const [addedProduct, setAddedProduct] = useState<string | null>(null)
   const { cart, addItem, updateQuantity } = useCart()
+  const formatPrice = (value: number) => `${new Intl.NumberFormat("vi-VN").format(value)} Đ`
 
   const handleAddToCart = (productId: string) => {
     const product = products.find((p) => p.id === productId)
@@ -48,23 +44,15 @@ export default function Marketplace() {
   return (
     <section
       id="marketplace"
-      className="py-20 md:py-28 px-4 bg-white relative overflow-hidden"
+      className="py-20 md:py-28 px-4 bg-white relative"
     >
-      {/* background soft tint */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `linear-gradient(135deg, ${rose}40, transparent, ${sand}40)`
-        }}
-      />
-
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16 animate-fadeInUp">
           <h2 className="text-4xl md:text-5xl font-bold text-[#A5C858] mb-4">
-            Cửa hàng IT Youth
+            Cửa hàng
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-            Mua sắm những sản phẩm ý nghĩa và ủng hộ cộng đồng tình nguyện cùng chúng mình nhé!
+            Hãy gửi chút hơi ấm bằng việc mua những sản phẩm ý nghĩa và ủng hộ chiến dịch Xuân Tình Nguyện cùng chúng mình nhé!
           </p>
           <div className="flex items-center justify-center gap-3 mt-4">
             {error && <span className="text-sm text-red-500">{error}</span>}
@@ -80,23 +68,17 @@ export default function Marketplace() {
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="rounded-2xl border-2 border-muted animate-pulse p-6 h-[320px]"
-                style={{
-                  background: `linear-gradient(135deg, ${leaf}10, transparent)`
-                }}
+                className="rounded-2xl border border-gray-200 animate-pulse p-6 h-[320px] bg-gray-50"
               >
                 <div className="h-32 bg-muted rounded-xl mb-4" />
                 <div className="h-4 bg-muted rounded mb-2" />
                 <div className="h-4 bg-muted rounded w-2/3" />
-                <div className="mt-6 h-10 rounded" style={{ background: `${peach}40` }} />
+                <div className="mt-6 h-10 rounded bg-gray-200" />
               </div>
             ))}
           </div>
         ) : products.length === 0 ? (
-          <div
-            className="rounded-2xl border border-dashed p-12 text-center mb-12"
-            style={{ borderColor: `${leaf}50` }}
-          >
+          <div className="rounded-2xl border border-dashed border-[#A5C858]/50 p-12 text-center mb-12">
             <p className="text-4xl mb-4">🛒</p>
             <p className="text-lg text-muted-foreground">
               Chưa có sản phẩm nào khả dụng.
@@ -107,85 +89,55 @@ export default function Marketplace() {
             {products.map((product, index) => (
               <div
                 key={product.id}
-                className="group rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:shadow-elevated animate-fadeInUp"
-                style={{
-                  borderColor: `${leaf}30`,
-                  animationDelay: `${index * 0.1}s`,
-                }}
+                className="rounded-2xl border border-gray-100 bg-white p-5 flex flex-col gap-4 transition hover:-translate-y-1 hover:shadow-lg animate-in fade-in"
+                style={{ animationDelay: `${index * 0.05}s` }}
               >
-                {/* product image area */}
-                <div
-                  className="h-48 flex items-center justify-center relative overflow-hidden" 
-                  style={{
-                    background: sand
-                  }}
-                >
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity" />
-                  {/*  */}
-                  <img 
-                      src={`/products/${product.imageId}.png`} 
-                      alt={product.name}
-                      className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                <div className="h-48 rounded-xl border border-gray-100 overflow-hidden bg-gray-50">
+                  <img
+                    src={`/products/${product.imageId}.png`}
+                    alt={product.name}
+                    className="object-cover w-full h-full"
                   />
-                  
                 </div>
 
-                <div className="p-5">
-                  <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                    {product.description ?? "Sản phẩm gây quỹ IT Youth"}
-                  </p>
+                <h3 className="text-lg font-semibold text-foreground line-clamp-2">{product.name}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {product.description ?? "Sản phẩm gây quỹ IT Youth"}
+                </p>
 
-                  <div className="flex items-center justify-between mb-4">
-                    <span
-                      className="text-3xl font-bold bg-clip-text text-transparent"
-                      style={{
-                        backgroundImage: leaf
-                      }}
-                    >
-                      {(product.price / 1000).toFixed(0)}K
-                    </span>
-                    {/* <span
-                      className="text-xs font-semibold px-3 py-1 rounded-full"
-                      style={{
-                        background: sand,
-                        // color: "#333"
-                      }}
-                    >
-                      Còn: {product.stock}
-                    </span> */}
+                <div className="flex items-end justify-between border-t border-gray-100 pt-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Giá</p>
+                    <p className="text-2xl font-bold text-gray-900">{formatPrice(product.price)}</p>
                   </div>
-
-                  <Button
-                    onClick={() => handleAddToCart(product.id)}
-                    className={`w-full font-semibold py-2 rounded-lg transition-all duration-300 shadow-medium hover:shadow-elevated flex items-center justify-center gap-2 ${
-                      addedProduct === product.id
-                        ? "bg-green-500 hover:bg-green-600 text-white animate-pulse-glow"
-                        : "text-white transform hover:scale-105"
-                    }`}
-                    style={
-                      addedProduct === product.id
-                        ? {}
-                        : {
-                            background: leaf
-                          }
-                    }
-                  >
-                    {addedProduct === product.id ? (
-                      <>
-                        <Check size={18} />
-                        Đã thêm!
-                      </>
-                    ) : (
-                      <>
-                        {/* <ShoppingCart size={18} /> */}
-                        Gửi chút hơi ấm tại đây!!!
-                      </>
-                    )}
-                  </Button>
+                  <div className="text-right text-xs text-muted-foreground">
+                    <p>Đã thêm</p>
+                    <p className="text-base font-semibold text-foreground">
+                      {cart.find((item) => item.id === product.id)?.quantity ?? 0}
+                    </p>
+                  </div>
                 </div>
+
+                <Button
+                  onClick={() => handleAddToCart(product.id)}
+                  className={`w-full font-semibold py-2 rounded-lg border border-gray-200 transition ${
+                    addedProduct === product.id
+                      ? "bg-foreground text-white"
+                      : "bg-white text-foreground hover:bg-[#A5C858] hover:text-white"
+                  }`}
+                >
+                  {addedProduct === product.id ? (
+                    <>
+                      <Check size={18} />
+                      Đã thêm!
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart size={18} />
+                      Thêm vào giỏ
+                    </>
+                  )}
+                </Button>
               </div>
             ))}
           </div>
@@ -195,10 +147,7 @@ export default function Marketplace() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/checkout" className="flex-1 sm:flex-none">
             <Button
-              className="w-full px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300 shadow-elevated hover:shadow-glow-blue flex items-center justify-center gap-2 h-12 transform hover:scale-105 text-white"
-              style={{
-                background: leaf
-              }}
+              className="w-full px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300 shadow-elevated flex items-center justify-center gap-2 h-12 transform hover:scale-105 text-white bg-[#A5C858] hover:bg-[#8dbd45]"
             >
               <ShoppingCart size={20} />
               Đi đến thanh toán
@@ -208,10 +157,7 @@ export default function Marketplace() {
           <Link href="/my-orders" className="flex-1 sm:flex-none">
             <Button
               variant="outline"
-              className="w-full px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300 shadow-elevated hover:shadow-glow-blue flex items-center justify-center gap-2 h-12 transform hover:scale-105 text-white"
-              style={{
-                background: leaf
-              }}
+              className="w-full px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300 shadow-elevated flex items-center justify-center gap-2 h-12 transform hover:scale-105 text-white border-none bg-[#A5C858] hover:bg-[#8dbd45]"
             >
               Xem đơn của bạn
             </Button>

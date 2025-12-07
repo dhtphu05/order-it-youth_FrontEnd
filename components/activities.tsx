@@ -56,7 +56,7 @@ export default function Activities() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-6xl md:text-5xl font-bold text-[#A5C858] mb-4">
-            Các hoạt động tình nguyện
+            Các hoạt động tình nguyện trong chiến dịch
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Hãy mở lòng đón nhận hành trình trọn vẹn của sự cho đi. Mỗi bước chân, mỗi hành động nhân ái của bạn là phép màu thầm lặng, là một bước đệm tạo nên sự thay đổi tích cực và sâu sắc cho cuộc sống.

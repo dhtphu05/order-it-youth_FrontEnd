@@ -133,9 +133,11 @@ export default function Hero() {
             </Button>
           </Link>
 
-          <Button className="border-2 border-[#A5C858] hover:bg-[#A5C858]/10 px-8 py-3 text-lg font-semibold rounded-lg transition-all duration-300 bg-white/10 backdrop-blur-sm text-white hover:text-white">
-            Tìm hiểu thêm
-          </Button>
+          <Link href="#charity-support">
+            <Button className="border-2 border-[#A5C858] hover:bg-[#A5C858]/10 px-8 py-3 text-lg font-semibold rounded-lg transition-all duration-300 bg-white/10 backdrop-blur-sm text-white hover:text-white">
+              Ủng hộ
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

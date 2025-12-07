@@ -562,7 +562,7 @@ export default function Checkout() {
                         >
                           {isSubmitting ? "Đang xử lý..." : "Tiền mặt khi nhận"}
                         </h3>
-                        <p className="text-muted-foreground">Dành cho bạn không dùng ngân hàng số</p>
+                        <p className="text-muted-foreground"></p>
                       </div>
                       <div className="text-3xl group-hover:scale-110 transition-transform">💵</div>
                     </div>
@@ -804,7 +804,7 @@ export default function Checkout() {
 
                 <div className={`rounded-lg p-6 mb-8 border bg-[${COLOR_SECONDARY}80] border-[${COLOR_PRIMARY}]`}>
                   <p className="text-foreground text-center">
-                    Tín dụng của bạn sẽ được cộng vào tài khoản Xuân Tình Nguyện. Nếu cần bổ sung, chúng mình sẽ liên hệ
+                    Nếu có vấn đề gì phát sinh cần bổ sung, chúng mình sẽ liên hệ
                     qua SĐT/Email.
                   </p>
                 </div>
