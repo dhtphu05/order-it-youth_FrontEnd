@@ -1,4 +1,5 @@
 import type React from "react"
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
@@ -24,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${inter.className} antialiased`}>
-        <ReferralCaptureClient />
+        <Suspense fallback={null}>
+          <ReferralCaptureClient />
+        </Suspense>
         {children}
         <Analytics />
       </body>
