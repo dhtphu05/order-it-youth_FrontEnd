@@ -5,11 +5,11 @@ import Image from "next/image";
 import FallingPetals from "./falling-petals";
 
 export default function CharitySupport() {
-  const qrCodeSrc = "/main_logo.png";
+  const qrCodeSrc = "/qr/qr_ntnt.png";
   const bankInfo = {
-    bankName: "",
-    accountNumber: "",
-    accountName: "DOAN HOANG THIEN PHU",
+    bankName: "Vietcombank",
+    accountNumber: "1062486818",
+    accountName: "NGUYEN THAI NGOC THAO",
   };
 
   return (
@@ -60,6 +60,7 @@ export default function CharitySupport() {
                     alt="QR Code"
                     width={250}
                     height={250}
+                    objectFit="contain"
                     className="rounded-md"
                   />
                 </div>

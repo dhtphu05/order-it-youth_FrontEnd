@@ -34,7 +34,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          <div>
+          {/* <div>
             <h3 className="text-slate-900 font-bold mb-4">Pháp lý</h3>
             <ul className="text-sm space-y-2 text-slate-500">
               <li>
@@ -53,7 +53,7 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
           <div>
             <h3 className="text-slate-900 font-bold mb-4">Liên hệ</h3>
             <ul className="text-sm space-y-2 text-slate-500">
