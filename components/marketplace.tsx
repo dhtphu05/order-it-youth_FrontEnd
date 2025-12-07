@@ -29,8 +29,9 @@ export default function Marketplace() {
         name: product.name,
         price: product.price,
         quantity: 1,
-        image: product.imageId, 
-        variantId: product.id,
+        image: product.imageUrl,
+        variantId: product.variantId,
+        comboId: product.comboId,
         priceVersion: product.priceVersion,
         clientPriceVnd: product.price,
       }
@@ -96,15 +97,22 @@ export default function Marketplace() {
               >
                 <div className="h-48 rounded-xl border border-gray-100 overflow-hidden bg-gray-50">
                   <img
-                    src={`/products/${product.imageId}.png`}
+                    src={product.imageUrl}
                     alt={product.name}
                     className="object-cover w-full h-full"
                   />
                 </div>
 
-                <h3 className="text-lg font-semibold text-foreground line-clamp-2">{product.name}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {product.description ?? "Sản phẩm gây quỹ IT Youth"}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-foreground line-clamp-2">{product.name}</h3>
+                  {product.badge && (
+                    <span className="text-xs uppercase tracking-wide px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+                      {product.badge}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-3">
+                  {product.description ?? (product.kind === "combo" ? "Combo ưu đãi từ cửa hàng IT Youth" : "Sản phẩm gây quỹ IT Youth")}
                 </p>
 
                 <div className="flex items-center justify-between border-t border-gray-100 pt-4">

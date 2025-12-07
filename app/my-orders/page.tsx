@@ -252,7 +252,7 @@ Cảm ơn bạn đã ủng hộ Xuân Tình Nguyện 2026!
                           
                           <div className="w-12 h-12 relative flex-shrink-0 overflow-hidden rounded-full">
                             <Image
-                              src={`/products/${item.image}.png`}
+                              src={item.image?.startsWith("/") ? item.image : `/products/${item.image}.png`}
                               alt={item.name}
                               fill
                               sizes="48px"
