@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  /* BẬT HIỆU ỨNG CUỘN MƯỢT */
+  scroll-behavior: smooth; 
+}
+
 :root {
   /* Enhanced spring color palette for premium feel */
   --background: oklch(0.98 0.002 70);
