@@ -3,7 +3,7 @@ import { config as loadEnv } from 'dotenv';
 
 loadEnv();
 
-const DEFAULT_BACKEND_URL = `http://api.lcdkhoacntt-dut.live` ;
+const DEFAULT_BACKEND_URL = `https://api.lcdkhoacntt-dut.live` ;
 const DEFAULT_OPENAPI_URL = `${DEFAULT_BACKEND_URL}/docs-json`;
 
 const backendBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_BACKEND_URL;
