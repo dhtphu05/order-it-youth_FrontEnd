@@ -16,7 +16,11 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
 import { searchPublicDonations } from "@/lib/api/donations"
-import type { DonationSearchParams, DonationSearchResponse } from "@/types/donation"
+import type {
+  DonationPaymentStatus,
+  DonationSearchParams,
+  DonationSearchResponse,
+} from "@/types/donation"
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("vi-VN", {
@@ -41,6 +45,26 @@ const formatDateTime = (date?: string | null) => {
     hour: "2-digit",
     minute: "2-digit",
   })
+}
+
+const normalizePaymentStatus = (
+  status?: string | null,
+  confirmedAt?: string | null,
+): DonationPaymentStatus => {
+  const upperCased = status?.toUpperCase()
+  if (upperCased === "FAILED") {
+    return "FAILED"
+  }
+
+  if (confirmedAt) {
+    return "CONFIRMED"
+  }
+
+  if (upperCased === "CONFIRMED") {
+    return "CONFIRMED"
+  }
+
+  return "PENDING"
 }
 
 export default function DonationLedger() {
@@ -212,45 +236,51 @@ export default function DonationLedger() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-4">
-              {ledgerItems.map((item) => (
-                <div key={item.id} className="rounded-2xl border border-gray-100 p-5 bg-white space-y-3 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-gray-900">{item.student_name}</p>
-                      <p className="text-xs text-gray-500">
-                        Lớp {item.student_class} • MSSV {item.mssv}
-                      </p>
+              {ledgerItems.map((item) => {
+                const paymentStatus = normalizePaymentStatus(item.payment_status, item.confirmed_at)
+                return (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-gray-100 p-5 bg-white space-y-3 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900">{item.student_name}</p>
+                        <p className="text-xs text-gray-500">
+                          Lớp {item.student_class} • MSSV {item.mssv}
+                        </p>
+                      </div>
+                      <span
+                        className={cn(
+                          "px-3 py-1 rounded-full text-xs font-medium",
+                          paymentStatus === "CONFIRMED"
+                            ? "bg-green-50 text-green-700"
+                            : paymentStatus === "FAILED"
+                              ? "bg-red-50 text-red-600"
+                              : "bg-yellow-50 text-yellow-700",
+                        )}
+                      >
+                        {paymentStatus === "CONFIRMED"
+                          ? "ĐÃ XÁC NHẬN"
+                          : paymentStatus === "FAILED"
+                            ? "THẤT BẠI"
+                            : "ĐANG CHỜ"}
+                      </span>
                     </div>
-                    <span
-                      className={cn(
-                        "px-3 py-1 rounded-full text-xs font-medium",
-                        item.payment_status === "CONFIRMED"
-                          ? "bg-green-50 text-green-700"
-                          : item.payment_status === "FAILED"
-                            ? "bg-red-50 text-red-600"
-                            : "bg-yellow-50 text-yellow-700",
-                      )}
-                    >
-                      {item.payment_status === "CONFIRMED"
-                        ? "ĐÃ XÁC NHẬN"
-                        : item.payment_status === "FAILED"
-                          ? "THẤT BẠI"
-                          : "ĐANG CHỜ"}
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-gray-500">Số tiền</p>
+                        <p className="text-xl font-semibold text-gray-900">{formatCurrency(item.amount)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">PVCĐ</p>
+                        <p className="text-xl font-semibold text-[#a5c858]">{item.pvcd_points ?? 0}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500">Xác nhận: {formatDateTime(item.confirmed_at)}</p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-gray-500">Số tiền</p>
-                      <p className="text-xl font-semibold text-gray-900">{formatCurrency(item.amount)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500">PVCĐ</p>
-                      <p className="text-xl font-semibold text-[#a5c858]">{item.pvcd_points ?? 0}</p>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-500">Xác nhận: {formatDateTime(item.confirmed_at)}</p>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
