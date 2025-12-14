@@ -4,6 +4,8 @@ import CharitySupport from "@/components/charity-support"
 import Activities from "@/components/activities"
 import Transparency from "@/components/transparency"
 import OrdersLog from "@/components/orders-log"
+import DonationSection from "@/components/donation-section"
+import DonationLedger from "@/components/donation-ledger"
 import Marketplace from "@/components/marketplace"
 import Gallery from "@/components/gallery"
 import Footer from "@/components/footer"
@@ -17,6 +19,8 @@ export default function Home() {
       <Activities />
       {/* <Transparency /> */}
       <OrdersLog />
+      <DonationSection />
+      <DonationLedger />
       <Marketplace />
       {/* <Gallery /> */}
       <Footer />
