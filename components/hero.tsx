@@ -1,13 +1,54 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { useEffect, useRef } from "react"
 import Image from "next/image"
+import { Timer } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 import FallingPetals from "./falling-petals"
+
+const CAMPAIGN_START_DATE = new Date("2026-01-31T04:00:00+07:00")
+const CAMPAIGN_START_LABEL = new Intl.DateTimeFormat("vi-VN", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+}).format(CAMPAIGN_START_DATE)
+
+const MS_PER_SECOND = 1000
+const MS_PER_MINUTE = MS_PER_SECOND * 60
+const MS_PER_HOUR = MS_PER_MINUTE * 60
+const MS_PER_DAY = MS_PER_HOUR * 24
+
+type CountdownState = {
+  days: number
+  hours: number
+  minutes: number
+  seconds: number
+  isComplete: boolean
+}
+
+const calculateTimeDifference = (): CountdownState => {
+  const now = Date.now()
+  const distance = Math.max(0, CAMPAIGN_START_DATE.getTime() - now)
+
+  const days = Math.floor(distance / MS_PER_DAY)
+  const hours = Math.floor((distance % MS_PER_DAY) / MS_PER_HOUR)
+  const minutes = Math.floor((distance % MS_PER_HOUR) / MS_PER_MINUTE)
+  const seconds = Math.floor((distance % MS_PER_MINUTE) / MS_PER_SECOND)
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+    isComplete: distance === 0,
+  }
+}
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const [timeLeft, setTimeLeft] = useState<CountdownState>(() => calculateTimeDifference())
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -84,6 +125,21 @@ export default function Hero() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setTimeLeft(calculateTimeDifference())
+    }, 1000)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
+
+  const countdownItems = [
+    { label: "Ngày", value: String(timeLeft.days).padStart(2, "0") },
+    { label: "Giờ", value: String(timeLeft.hours).padStart(2, "0") },
+    { label: "Phút", value: String(timeLeft.minutes).padStart(2, "0") },
+    { label: "Giây", value: String(timeLeft.seconds).padStart(2, "0") },
+  ]
+
   return (
     <section 
       className="relative overflow-hidden min-h-screen flex flex-col justify-center items-center px-4"
@@ -138,6 +194,29 @@ export default function Hero() {
               Ủng hộ
             </Button>
           </Link>
+        </div>
+
+        <div className="w-full max-w-3xl mt-8 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.5s" }}>
+          <div className="flex items-center justify-center gap-2 text-white/90 text-xs uppercase tracking-[0.2em]">
+            <Timer className="size-4" />
+            <span>Đếm ngược tới ngày xuất phát</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {countdownItems.map((item) => (
+              <div
+                key={item.label}
+                className="rounded-2xl bg-white/10 border border-white/15 shadow-[0px_15px_35px_rgba(0,0,0,0.25)] backdrop-blur-md px-4 py-5 text-center text-white"
+              >
+                <p className="text-4xl font-semibold tracking-tight">{item.value}</p>
+                <p className="mt-2 text-xs uppercase tracking-[0.3em] text-white/70">{item.label}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-white/80 tracking-wide">
+            {timeLeft.isComplete
+              ? "Chiến dịch Xuân Tình Nguyện 2026 đang diễn ra! Hãy cùng chung tay lan tỏa yêu thương bằng những ủng hộ của bạn."
+              : `Xuân Tình Nguyện 2026 sẽ xuất quân vào ngày ${CAMPAIGN_START_LABEL}-01/02/2026. Cùng đếm ngược nàooooooo!`}
+          </p>
         </div>
       </div>
     </section>

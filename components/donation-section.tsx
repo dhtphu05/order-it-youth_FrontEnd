@@ -23,7 +23,7 @@ import type { DonationReceipt } from "@/types/donation"
 
 const donationFormSchema = z.object({
   student_name: z.string().min(2, "Vui lòng nhập họ tên sinh viên"),
-  student_class: z.string().min(2, "Vui lòng nhập lớp/khoa"),
+  student_class: z.string().min(2, "Vui lòng nhập lớp"),
   mssv: z.string().min(3, "MSSV không hợp lệ"),
   phone: z
     .string()
@@ -134,13 +134,13 @@ export default function DonationSection() {
         <div className="text-center mb-12">
           <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm text-sm font-semibold text-[#a75a96]">
             <Sparkles className="size-4 text-[#f5b1ac]" />
-            IT Youth gây quỹ sinh viên
+           Gây quỹ sinh viên
           </p>
           <h2 className="mt-4 text-4xl md:text-5xl font-bold text-[#a5c858] text-balance">
-            Đăng ký ủng hộ sinh viên khó khăn
+            Chung tay gieo mầm yêu thương
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
-            Điền thông tin phía dưới để nhận mã VietQR chuyển khoản nhanh cho các sinh viên có hoàn cảnh cần hỗ trợ.
+            Mỗi đóng góp của bạn là một tia sáng, mang đến nụ cười và hy vọng cho những hoàn cảnh khó khăn.
           </p>
         </div>
 
@@ -149,11 +149,11 @@ export default function DonationSection() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <p className="text-sm uppercase tracking-wider text-[#f5b1ac]">Đăng ký quyên góp</p>
-                <h3 className="text-2xl font-semibold text-gray-900">Nhận VietQR tức thì</h3>
+                {/* <h3 className="text-2xl font-semibold text-gray-900">Nhận VietQR tức thì</h3> */}
               </div>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#fce4d6] text-[#c96f58]">
+              {/* <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#fce4d6] text-[#c96f58]">
                 3 bước
-              </span>
+              </span> */}
             </div>
 
             <Form {...donationForm}>
@@ -252,7 +252,7 @@ export default function DonationSection() {
                   />
                 </div>
 
-                <div className="rounded-2xl border border-dashed border-[#a5c858]/40 bg-[#f5ffef] p-4 flex flex-col gap-2">
+                {/* <div className="rounded-2xl border border-dashed border-[#a5c858]/40 bg-[#f5ffef] p-4 flex flex-col gap-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium text-gray-700">PVCĐ dự kiến</span>
                     <span className="text-lg font-bold text-[#a5c858]">{previewPoints} điểm</span>
@@ -260,7 +260,7 @@ export default function DonationSection() {
                   <p className="text-xs text-gray-500">
                     Điều chỉnh số tiền để xem mức điểm tương ứng theo quy định Ban tổ chức.
                   </p>
-                </div>
+                </div> */}
 
                 <Button
                   type="submit"
@@ -324,7 +324,7 @@ export default function DonationSection() {
                     </div>
                   ) : (
                     <div className="w-full text-center text-sm text-gray-600 bg-gray-50 rounded-2xl p-4">
-                      Không nhận được hình ảnh QR. Hãy mở liên kết VietQR trong email hoặc dùng mã chuyển khoản.
+                      Không nhận được hình ảnh QR. Hãy mã chuyển khoản.
                     </div>
                   )}
                   <div className="text-xs text-gray-500 text-center">
@@ -339,7 +339,7 @@ export default function DonationSection() {
                     className="w-full sm:w-auto"
                     onClick={handleConfirmTransfer}
                   >
-                    Tôi xác nhận đã chuyển khoản
+                    Xác nhận đã chuyển khoản
                   </Button>
                   {showGratitude && (
                     <div className="rounded-2xl border border-[#fce4d6] bg-gradient-to-r from-[#fff5f4] to-[#fffdf6] p-4 flex items-start gap-3">
@@ -349,7 +349,7 @@ export default function DonationSection() {
                         <p className="text-gray-600">
                           Chúng mình đã ghi nhận xác nhận chuyển khoản và sẽ kiểm tra sao kê mỗi ngày một lần. Kết quả sẽ được cập nhật ngay khi hoàn tất đối soát.
                         </p>
-                        <p className="text-xs text-gray-500">Nếu cần hỗ trợ thêm, hãy liên hệ đội ngũ IT Youth nhé.</p>
+                        <p className="text-xs text-gray-500">Nếu cần hỗ trợ thêm, hãy liên hệ đội ngũ IT Media nhé.</p>
                       </div>
                     </div>
                   )}

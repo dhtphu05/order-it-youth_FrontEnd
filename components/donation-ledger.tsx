@@ -235,15 +235,15 @@ export default function DonationLedger() {
               Chưa có ủng hộ được tìm thấy. Hãy thử điều chỉnh bộ lọc.
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               {ledgerItems.map((item) => {
                 const paymentStatus = normalizePaymentStatus(item.payment_status, item.confirmed_at)
                 return (
                   <div
                     key={item.id}
-                    className="rounded-2xl border border-gray-100 p-5 bg-white space-y-3 shadow-sm"
+                    className="rounded-2xl border border-gray-100 p-5 bg-white space-y-4 shadow-sm"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="font-semibold text-gray-900">{item.student_name}</p>
                         <p className="text-xs text-gray-500">
@@ -267,17 +267,13 @@ export default function DonationLedger() {
                             : "ĐANG CHỜ"}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-gray-500">Số tiền</p>
+                    <div className="flex flex-col gap-2 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="space-y-1">
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Số tiền</p>
                         <p className="text-xl font-semibold text-gray-900">{formatCurrency(item.amount)}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">PVCĐ</p>
-                        <p className="text-xl font-semibold text-[#a5c858]">{item.pvcd_points ?? 0}</p>
-                      </div>
+                      <p className="text-xs text-gray-500">Xác nhận: {formatDateTime(item.confirmed_at)}</p>
                     </div>
-                    <p className="text-xs text-gray-500">Xác nhận: {formatDateTime(item.confirmed_at)}</p>
                   </div>
                 )
               })}
