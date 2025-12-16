@@ -85,9 +85,9 @@ const formatCurrency = (value: number) =>
 
 const calculatePvcdPoints = (amount: number) => {
   if (amount < 20000) return 0
-  if (amount <= 30000) return 5
-  if (amount <= 50000) return 7
-  if (amount <= 100000) return 8
+  if (amount < 30000) return 5
+  if (amount < 50000) return 7
+  if (amount < 100000) return 8
   return 10
 }
 

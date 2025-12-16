@@ -6,7 +6,8 @@ export default function Footer() {
           <div>
             <h3 className="text-slate-900 font-bold mb-4">Về chúng mình</h3>
             <p className="text-sm text-slate-900">
-              Chiến dịch Xuân Tình Nguyện chính là cơ hội để mỗi chúng ta tạo ra sự khác biệt. Đây là nơi sức trẻ được dùng để thắp sáng những điều tốt đẹp và lan tỏa giá trị tình yêu thương đến với mọi người.
+              Liên chi Đoàn Khoa Công nghệ Thông tin là một tổ chức với những sinh viên IT năng động, sáng tạo và đam mê công nghệ tại Trường Đại học Bách khoa - Đại học Đà Nẵng theo định hướng không ngừng đổi mới nhằm tạo điều kiện cho sinh viên thi đua học tập, rèn luyện và phát triển toàn diện.
+
             </p>
           </div>
           <div>

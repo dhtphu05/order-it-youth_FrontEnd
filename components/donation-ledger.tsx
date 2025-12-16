@@ -104,7 +104,10 @@ export default function DonationLedger() {
   const totalPages = ledgerResult?.meta.pages ?? 1
 
   return (
-    <section id="donation-ledger" className="py-20 px-4 bg-white">
+    <section
+      id="donation-ledger"
+      className="py-20 px-4 bg-gradient-to-b from-[#f3f7ff] via-white to-[#fdfdfd]"
+    >
       <div className="max-w-5xl mx-auto space-y-10">
         <div className="text-center space-y-4">
           <p className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#eef6ff] text-[#3f7ee8] text-sm font-semibold">
