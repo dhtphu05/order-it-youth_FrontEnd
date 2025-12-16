@@ -22,7 +22,7 @@ export default function Home() {
 
       <Activities />
       {/* <Transparency /> */}
-      <OrdersLog />
+      {/* <OrdersLog /> */}
       {/* <Marketplace /> */}
       {/* <Gallery /> */}
       <Footer />
