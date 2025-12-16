@@ -14,13 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Spinner } from "@/components/ui/spinner"
-import { cn } from "@/lib/utils"
 import { searchPublicDonations } from "@/lib/api/donations"
-import type {
-  DonationPaymentStatus,
-  DonationSearchParams,
-  DonationSearchResponse,
-} from "@/types/donation"
+import type { DonationSearchParams, DonationSearchResponse } from "@/types/donation"
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("vi-VN", {
@@ -29,7 +24,7 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value)
 
-const formatDateTime = (date?: string | null) => {
+const formatDate = (date?: string | null) => {
   if (!date) {
     return "Chưa xác nhận"
   }
@@ -37,34 +32,11 @@ const formatDateTime = (date?: string | null) => {
   if (Number.isNaN(parsed.getTime())) {
     return "Chưa xác nhận"
   }
-  return parsed.toLocaleString("vi-VN", {
-    hour12: false,
+  return parsed.toLocaleDateString("vi-VN", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
   })
-}
-
-const normalizePaymentStatus = (
-  status?: string | null,
-  confirmedAt?: string | null,
-): DonationPaymentStatus => {
-  const upperCased = status?.toUpperCase()
-  if (upperCased === "FAILED") {
-    return "FAILED"
-  }
-
-  if (confirmedAt) {
-    return "CONFIRMED"
-  }
-
-  if (upperCased === "CONFIRMED") {
-    return "CONFIRMED"
-  }
-
-  return "PENDING"
 }
 
 export default function DonationLedger() {
@@ -128,7 +100,6 @@ export default function DonationLedger() {
   }
 
   const ledgerItems = ledgerResult?.data ?? []
-  const totalConfirmed = ledgerResult?.meta.total ?? 0
   const currentPage = ledgerResult?.meta.page ?? ledgerParams.page ?? 1
   const totalPages = ledgerResult?.meta.pages ?? 1
 
@@ -147,11 +118,11 @@ export default function DonationLedger() {
 
         <div className="rounded-3xl border border-[#e0e7ff] bg-[#f9fbff] p-6 shadow-inner space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            <div className="space-y-2">
               <p className="text-sm uppercase tracking-wide text-[#7ba4ff]">Sao kê công khai</p>
-              <h3 className="text-2xl font-semibold text-gray-900">
-                Đã xác nhận: {totalConfirmed} lượt ủng hộ
-              </h3>
+              <p className="text-sm text-gray-600 max-w-md">
+                Chúng mình sẽ cập nhật danh sách ủng hộ vào lúc 18h hàng ngày để đảm bảo tính minh bạch và kịp thời. Cảm ơn bạn đã đồng hành cùng Xuân Tình Nguyện 2026!
+              </p>
             </div>
             <form className="w-full sm:w-auto" onSubmit={handleLedgerSearch}>
               <Label htmlFor="ledger-mssv" className="sr-only">
@@ -236,47 +207,23 @@ export default function DonationLedger() {
             </div>
           ) : (
             <div className="space-y-4">
-              {ledgerItems.map((item) => {
-                const paymentStatus = normalizePaymentStatus(item.payment_status, item.confirmed_at)
-                return (
-                  <div
-                    key={item.id}
-                    className="rounded-2xl border border-gray-100 p-5 bg-white space-y-4 shadow-sm"
-                  >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="font-semibold text-gray-900">{item.student_name}</p>
-                        <p className="text-xs text-gray-500">
-                          Lớp {item.student_class} • MSSV {item.mssv}
-                        </p>
-                      </div>
-                      <span
-                        className={cn(
-                          "px-3 py-1 rounded-full text-xs font-medium",
-                          paymentStatus === "CONFIRMED"
-                            ? "bg-green-50 text-green-700"
-                            : paymentStatus === "FAILED"
-                              ? "bg-red-50 text-red-600"
-                              : "bg-yellow-50 text-yellow-700",
-                        )}
-                      >
-                        {paymentStatus === "CONFIRMED"
-                          ? "ĐÃ XÁC NHẬN"
-                          : paymentStatus === "FAILED"
-                            ? "THẤT BẠI"
-                            : "ĐANG CHỜ"}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-2 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="space-y-1">
-                        <p className="text-xs uppercase tracking-wide text-gray-500">Số tiền</p>
-                        <p className="text-xl font-semibold text-gray-900">{formatCurrency(item.amount)}</p>
-                      </div>
-                      <p className="text-xs text-gray-500">Xác nhận: {formatDateTime(item.confirmed_at)}</p>
-                    </div>
+              {ledgerItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-2xl border border-gray-100 p-5 bg-white space-y-4 shadow-sm"
+                >
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="font-semibold text-gray-900">{item.student_name}</p>
+                    <p className="text-xs text-gray-500">
+                      Ngày chuyển: {formatDate(item.confirmed_at)}
+                    </p>
                   </div>
-                )
-              })}
+                  <div className="flex items-center justify-between text-sm text-gray-600">
+                    <p className="text-xs uppercase tracking-wide text-gray-500">Số tiền</p>
+                    <p className="text-xl font-semibold text-gray-900">{formatCurrency(item.amount)}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

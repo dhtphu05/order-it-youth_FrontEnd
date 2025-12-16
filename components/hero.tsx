@@ -183,7 +183,7 @@ export default function Hero() {
         />
 
         <div className="flex flex-col sm:flex-row gap-4 mt-0.5 animate-fadeInUp" style={{ animationDelay: "0.3s" }}>
-          <Link href="#marketplace">
+          <Link href="#donation-section">
             <Button className="group bg-[#A5C858] hover:bg-[#92B94F] text-white px-8 py-3 text-lg font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
               <span className="flex items-center gap-2">Gửi chút hơi ấm</span>
             </Button>

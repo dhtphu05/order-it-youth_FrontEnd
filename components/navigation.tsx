@@ -48,13 +48,13 @@ export default function Navigation() {
     : "text-white hover:text-[#A5C858]"
 
   const wrapperClasses = `
-    fixed z-40 w-full transition-all duration-300
+    fixed z-40 w-full flex justify-center transition-all duration-300
     ${isScrolled ? "top-3" : "top-5"}
     px-3 sm:px-6 lg:px-8
   `
 
   const navClasses = `
-    mx-auto max-w-5xl rounded-[36px] border border-white/40 bg-white/35
+    mx-auto w-auto  rounded-[36px] border border-white/40 bg-white/35
     backdrop-blur-2xl shadow-xl saturate-150
     px-4 sm:px-6
     transition-colors duration-300
@@ -63,7 +63,7 @@ export default function Navigation() {
   return (
     <div className={wrapperClasses}>
       <nav className={navClasses}>
-        <div className="h-16 flex items-center justify-between gap-3">
+        <div className="h-16 flex items-center justify-center gap-3">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
@@ -77,14 +77,15 @@ export default function Navigation() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/#charity-support" className={`${linkColor} transition`}>Ủng hộ</Link>
-            <Link href="/#activities" className={`${linkColor} transition`}>Hoạt động</Link>
-            <Link href="/#marketplace" className={`${linkColor} transition`}>Cửa hàng</Link>
-          </div>
+          {/* < className="hidden md:flex items-center gap-8 flex-1 justify-center"> */}
+            {/* <Link href="/#charity-support" className={`${linkColor} transition`}>Ủng hộ</Link>
+            <Link href="/#activities" className={`${linkColor} transition`}>Hoạt động</Link> */}
+            {/* <Link href="/#marketplace" className={`${linkColor} transition`}>Cửa hàng</Link> */}
+            
+          
 
           {/* Desktop Buttons */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* <div className="hidden md:flex items-center gap-4">
             <Link href="/checkout" className="relative">
               <Button
                 variant="outline"
@@ -111,10 +112,10 @@ export default function Navigation() {
                 Đơn hàng
               </Button>
             </Link>
-          </div>
+          </div> */}
 
           {/* Mobile Toggle */}
-          <button
+          {/* <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 hover:bg-white/40 backdrop-blur-md rounded-lg"
           >
@@ -122,7 +123,7 @@ export default function Navigation() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-          </button>
+          </button> */}
         </div>
 
         {isOpen && (

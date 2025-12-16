@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import FallingPetals from "./falling-petals";
+import { ChevronDown } from "lucide-react";
 
 export default function CharitySupport() {
   const qrCodeSrc = "/qr/qr_ntnt.png";
@@ -32,19 +33,21 @@ export default function CharitySupport() {
 
       <div className="container mx-auto px-4 relative z-10">
         
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-[#a5c858] leading-tight mb-4 animate-fadeInUp">
-            Chung tay gieo mầm yêu thương
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto animate-fadeInUp delay-100">
+        <div className="text-center mb-12 flex flex-col backdrop-blur-md bg-white/30 items-center rounded-3xl px-8 py-4 shadow-lg mx-auto max-w-3xl">
+          <div className="inline-block  px-8 py-4 rounded-3xl  mb-4">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-[#a5c858]  animate-fadeInUp ">
+              Chung tay gieo mầm yêu thương
+            </h2>
+          </div>
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto animate-fadeInUp delay-100 backdrop-blur-sm bg-white/40 px-6 py-3 rounded-2xl shadow-md">
             Mỗi đóng góp của bạn là một tia sáng, mang đến nụ cười và hy vọng cho những hoàn cảnh khó khăn.
           </p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-6 items-stretch">
+        <div className="max-w-3xl mx-auto flex justify-center">
+          <div className="w-full max-w-2xl">
 
-            <div className="w-full md:w-1/2 flex">
+            {/* <div className="w-full md:w-1/2 flex">
               <div className="flex flex-col w-full p-8 bg-[#fff8e7] rounded-2xl shadow-xl 
                 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 
                 border border-gray-100 animate-fadeInLeft">
@@ -86,9 +89,9 @@ export default function CharitySupport() {
                   Xin chân thành cảm ơn mọi tấm lòng hảo tâm đã đồng hành cùng Xuân Tình Nguyện 2026.
                 </p>
               </div>
-            </div>
+            </div> */}
 
-            <div className="w-full md:w-1/2 flex">
+            <div className="w-full flex justify-center">
               <div className="flex flex-col w-full p-8 bg-[#fff8e7] rounded-2xl shadow-xl 
                 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 
                 border border-gray-100 animate-fadeInRight">
@@ -114,12 +117,24 @@ export default function CharitySupport() {
                 </div>
                 
               </div>
+               {/* Animated Arrow */}
+          
             </div>
 
           </div>
         </div>
 
       </div>
+      <div className="mt-8 flex justify-center">
+            <div className="animate-bounce">
+              <ChevronDown className="size-8 text-[#a5c858]" strokeWidth={3} />
+            </div>
+          </div>
+          <div className="mt-8 flex justify-center">
+            <div className="animate-bounce">
+              <ChevronDown className="size-8 text-[#a5c858]" strokeWidth={3} />
+            </div>
+          </div>
     </section>
   );
 }

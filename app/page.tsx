@@ -16,12 +16,14 @@ export default function Home() {
       <Navigation />
       <Hero />
       <CharitySupport/>
+      <DonationSection />
+      <DonationLedger />
+
+
       <Activities />
       {/* <Transparency /> */}
       <OrdersLog />
-      <DonationSection />
-      <DonationLedger />
-      <Marketplace />
+      {/* <Marketplace /> */}
       {/* <Gallery /> */}
       <Footer />
     </main>

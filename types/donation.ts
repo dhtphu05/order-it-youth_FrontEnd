@@ -4,9 +4,9 @@ export type DonationPaymentStatus = "PENDING" | "CONFIRMED" | "FAILED"
 
 export interface DonationRequestPayload {
   student_name: string
-  student_class: string
-  mssv: string
-  phone: string
+  student_class?: string
+  mssv?: string
+  phone?: string
   amount: number
   provider?: DonationPaymentProvider
 }
@@ -22,8 +22,8 @@ export interface DonationRecord {
   id: string
   donation_code: string
   student_name: string
-  student_class: string
-  mssv: string
+  student_class?: string | null
+  mssv?: string | null
   amount: number
   pvcd_points: number | null
   payment_status: DonationPaymentStatus
