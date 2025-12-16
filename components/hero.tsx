@@ -183,17 +183,17 @@ export default function Hero() {
         />
 
         <div className="flex flex-col sm:flex-row gap-4 mt-0.5 animate-fadeInUp" style={{ animationDelay: "0.3s" }}>
-          <Link href="#donation-section">
-            <Button className="group bg-[#A5C858] hover:bg-[#92B94F] text-white px-8 py-3 text-lg font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+          <Link href="#donate">
+            <Button className="group bg-[#A5C858] hover:bg-[#92B94F] text-white px-10 py-4 text-xl font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-soft">
               <span className="flex items-center gap-2">Gửi chút hơi ấm</span>
             </Button>
           </Link>
 
-          <Link href="#charity-support">
+          {/* <Link href="#charity-support">
             <Button className="border-2 border-[#A5C858] hover:bg-[#A5C858]/10 px-8 py-3 text-lg font-semibold rounded-lg transition-all duration-300 bg-white/10 backdrop-blur-sm text-white hover:text-white">
               Ủng hộ
             </Button>
-          </Link>
+          </Link> */}
         </div>
 
         <div className="w-full max-w-3xl mt-8 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.5s" }}>
@@ -219,6 +219,15 @@ export default function Hero() {
           </p>
         </div>
       </div>
+      <style>{`
+        @keyframes bounce-soft {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+        .animate-bounce-soft {
+          animation: bounce-soft 2.4s ease-in-out infinite;
+        }
+      `}</style>
     </section>
   )
 }
