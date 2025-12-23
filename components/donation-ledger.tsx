@@ -113,7 +113,7 @@ export default function DonationLedger() {
           <p className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#eef6ff] text-[#3f7ee8] text-sm font-semibold">
             Sao kê minh bạch
           </p>
-          <h2 className="text-4xl font-bold text-[#2d3a4a]">Danh sách ủng hộ sinh viên</h2>
+          <h2 className="text-4xl font-bold text-[#2d3a4a]">Danh sách ủng hộ</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Theo dõi các khoản quyên góp đã xác nhận. Thông tin số điện thoại được ẩn để bảo vệ quyền riêng tư.
           </p>

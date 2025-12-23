@@ -207,7 +207,7 @@ export default function DonationSection() {
                   name="donor_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Bạn đang ủng hộ với tư cách</FormLabel>
+                      <FormLabel>Bạn là</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
