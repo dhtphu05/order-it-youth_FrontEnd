@@ -6,7 +6,9 @@ export default function Footer() {
           <div>
             <h3 className="text-slate-900 font-bold mb-4">Về chúng mình</h3>
             <p className="text-sm text-slate-900">
-              Liên chi Đoàn Khoa Công nghệ Thông tin là một tổ chức với những sinh viên IT năng động, sáng tạo và đam mê công nghệ tại Trường Đại học Bách khoa - Đại học Đà Nẵng theo định hướng không ngừng đổi mới nhằm tạo điều kiện cho sinh viên thi đua học tập, rèn luyện và phát triển toàn diện.
+              Liên Chi Đoàn Khoa Công Nghệ Thông Tin (LCĐ Khoa CNTT) là tổ chức trực thuộc Đoàn Trường ĐH Bách Khoa - ĐH Đà Nẵng, với sứ mệnh kết nối, hỗ trợ và phát triển toàn diện cho sinh viên khoa CNTT.
+
+LCĐ không chỉ là nơi tập trung những cá nhân đầy nhiệt huyết và năng động, mà còn là môi trường giúp các bạn trẻ phát huy khả năng lãnh đạo, sáng tạo và đóng góp tích cực vào cộng đồng.
 
             </p>
           </div>

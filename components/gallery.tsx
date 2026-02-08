@@ -1,126 +1,133 @@
 "use client"
 
-import type React from "react"
-import Image from "next/image"; 
+import * as React from "react"
+import Image from "next/image"
+import { motion, AnimatePresence } from "framer-motion"
+import { X, ZoomIn } from "lucide-react"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
+const images = [
+  "622912485_1585853886883410_754634918578593989_n.jpg",
+  "622971074_1585605596908239_8726703496550319888_n.jpg",
+  "624948176_1589447823190683_7013286695118099522_n.jpg",
+  "625257199_1589446706524128_4685604494069775165_n.jpg",
+  "625299013_1589448053190660_61564625022756704_n.jpg",
+  "625514268_1590546223080843_1572246246424026378_n.jpg",
+  "625749599_1592333772902088_4307864752414973758_n.jpg",
+  "625894232_1590546149747517_5220802092330195304_n.jpg",
+  "625993464_1589448099857322_1349206343918680944_n.jpg",
+  "626044488_1590546346414164_4847775253696858806_n.jpg",
+  "626099969_1590546013080864_6323770292996779329_n.jpg",
+  "626313150_1592334146235384_3838676514170332018_n.jpg",
+  "626352114_1592334502902015_6839880655389599739_n.jpg",
+  "626546297_1589448176523981_7850736008035410045_n.jpg",
+  "626662306_1592334412902024_1979713207325240192_n.jpg",
+  "626814370_1589445526524246_8342621629114652831_n.jpg",
+  "627205552_1592334556235343_3506653509502845766_n.jpg",
+  "627541683_1589448016523997_6339556732057077429_n.jpg",
+  "627693539_1589446029857529_4349782102912810047_n.jpg",
+  "627721605_1592334029568729_2181095463769313002_n.jpg",
+  "627849132_1590546443080821_3410677583275305945_n.jpg",
+  "627872152_1592333779568754_4325154320029400307_n.jpg",
+  "627983776_1592334326235366_5357576339445905766_n.jpg",
+  "628155965_1592334566235342_8500999826920714733_n.jpg",
+  "628715821_1592334139568718_7985297000392580175_n.jpg",
+  "628783573_1592334076235391_2722116047458902325_n.jpg",
+  "629138809_1592334432902022_8483664310315785678_n.jpg",
+  "629154766_1590546016414197_2804424312938555796_n.jpg",
+  "629273601_1592334336235365_8476555628143232172_n.jpg",
+  "DSC00177.jpg",
+  "DSC00193.jpg",
+  "DSC00214 (1).jpg",
+  "DSC00250.jpg",
+  "DSC00436.jpg",
+  "DSC08977-Enhanced-NR.jpg",
+  "DSC09055.jpg",
+].map(filename => `/xtn26/${filename}`)
+
 export default function Gallery() {
-  const gallery = [
-    {
-      id: 1,
-      image: "/bg3.png", 
-      title: "Dấu Ấn Xuân Yêu Thương",
-      desc: "Những khoảnh khắc vỡ òa niềm hạnh phúc khi chúng mình trao tặng hơn 100+ suất quà Tết ấm áp, đong đầy tình người."
-    },
-    {
-      id: 2,
-      image: "/hmm.png", 
-      title: "Kết Nối Những Trái Tim Nhân Ái",
-      desc: "Lòng yêu thương lan tỏa khi hàng trăm tâm hồn thiện nguyện cùng chung một nhịp đập, biến ước mơ thành hành động vĩ đại."
-    },
-    {
-      id: 3,
-      image: "/hmm.png", 
-      title: "Cùng Nhau Gieo Những Mầm Xanh",
-      desc: "Chúng ta cùng nhau viết nên câu chuyện xanh, dọn dẹp và bảo vệ từng hơi thở của Trái Đất, cùng tạo ra một thế giới xanh, sạch, đẹp."
-    },
-    {
-      id: 4,
-      image: "/169.png", 
-      title: "Làn Sóng Tình Yêu Thương Bất Tận",
-      desc: "Mỗi cử chỉ nhỏ bé, mỗi sự sẻ chia chân thành đều là những tia sáng diệu kỳ tạo nên sự đổi thay sâu sắc và lan tỏa khắp mọi nơi."
-    },
-  ];
+  const [selectedImage, setSelectedImage] = React.useState<string | null>(null)
 
   return (
-    <section id="gallery" className="py-16 md:py-24 px-4 bg-white">
-      <div className="max-w-6xl mx-auto">
-
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#A5C858] mb-4">
-            Những khoảnh khắc ý nghĩa
-          </h2>
-          <p className="text-xl text-gray-700">
-            Theo dõi những câu chuyện cảm động cùng với chúng mình
-          </p>
+    <section id="gallery" className="py-20 md:py-32 px-4 bg-[#fffdf5] overflow-hidden">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="text-center mb-20 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-block px-6 py-2 rounded-full bg-[#fde9e8] text-[#e85d56] text-sm font-bold tracking-wider mb-2 uppercase"
+          >
+            Khoảnh khắc đáng nhớ
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold text-[#A5C858] font-heading tracking-tight"
+          >
+            Những khoảnh khắc đáng nhớ
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed"
+          >
+            Lưu giữ những nụ cười, những giọt mồ hôi và những khoảnh khắc đẹp nhất trong hành trình mang xuân về bản làng.
+          </motion.p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {gallery.map((item) => (
-            <div
-              key={item.id}
-              className="group relative overflow-hidden rounded-2xl border transition-all duration-300 bg-white shadow-md hover:shadow-xl" // Thêm shadow nhẹ
-              style={{
-                borderColor: "#FCEDBE" // sand
-              }}
+        <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 px-2">
+          {images.map((src, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: index * 0.05 }}
+              className="break-inside-avoid"
             >
-              {/* */}
-              <div
-                className="h-64 flex items-center justify-center relative overflow-hidden" 
-                style={{
-                  backgroundColor: "#FCE8E7" // rose
-                }}
-              >
-                {/*  */}
-                <Image
-                  src={item.image} 
-                  alt={item.title}
-                  layout="fill" 
-                  objectFit="cover" 
-                  className="transition-transform duration-300 group-hover:scale-110" 
-                />
-              </div>
-
-              {/* Hover overlay (Giữ nguyên) */}
-              <div
-                className="absolute inset-0 flex flex-col justify-end p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  backgroundColor: "rgba(0, 0, 0, 0.45)"
-                }}
-              >
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-gray-100">{item.desc}</p>
-              </div>
-            </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="group relative overflow-hidden rounded-3xl cursor-pointer bg-gray-100">
+                    <Image
+                      src={src}
+                      alt={`Gallery image ${index + 1}`}
+                      width={600}
+                      height={800}
+                      className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <div className="bg-white/90 backdrop-blur-sm p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-100">
+                        <ZoomIn className="w-6 h-6 text-gray-800" />
+                      </div>
+                    </div>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-[95vw] h-[90vh] bg-transparent border-none shadow-none p-0 flex items-center justify-center">
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {/* Close button handled by Dialog primitive usually, but we can customize or rely on default */}
+                    <div className="relative w-auto h-auto max-w-full max-h-full rounded-lg overflow-hidden shadow-2xl">
+                      <Image
+                        src={src}
+                        alt="Full viewing"
+                        width={1920}
+                        height={1080}
+                        className="object-contain max-w-full max-h-[90vh]"
+                      />
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </motion.div>
           ))}
         </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-gray-700 mb-4">Theo dõi chúng mình qua các trang mạng xã hội</p>
-
-          <div className="flex justify-center gap-4">
-
-            {/* leaf */}
-            <a
-              href="#"
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white transition hover:scale-110"
-              style={{ backgroundColor: "#A5C858" }}
-            >
-              f
-            </a>
-
-            {/* peach */}
-            <a
-              href="#"
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white transition hover:scale-110"
-              style={{ backgroundColor: "#F5B1AC" }}
-            >
-              IG
-            </a>
-
-            {/* softlime */}
-            <a
-              href="#"
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white transition hover:scale-110"
-              style={{ backgroundColor: "#D3E281" }}
-            >
-              X
-            </a>
-
-          </div>
-        </div>
-
       </div>
     </section>
-  );
+  )
 }
