@@ -24,7 +24,7 @@ export default function Home() {
       {/* <Transparency /> */}
       {/* <OrdersLog /> */}
       {/* <Marketplace /> */}
-      {/* <Gallery /> */}
+      <Gallery />
       <Footer />
     </main>
   )

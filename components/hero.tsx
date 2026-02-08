@@ -1,54 +1,15 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Timer } from "lucide-react"
+import { ArrowDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import FallingPetals from "./falling-petals"
 
-const CAMPAIGN_START_DATE = new Date("2026-01-31T04:00:00+07:00")
-const CAMPAIGN_START_LABEL = new Intl.DateTimeFormat("vi-VN", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-}).format(CAMPAIGN_START_DATE)
-
-const MS_PER_SECOND = 1000
-const MS_PER_MINUTE = MS_PER_SECOND * 60
-const MS_PER_HOUR = MS_PER_MINUTE * 60
-const MS_PER_DAY = MS_PER_HOUR * 24
-
-type CountdownState = {
-  days: number
-  hours: number
-  minutes: number
-  seconds: number
-  isComplete: boolean
-}
-
-const calculateTimeDifference = (): CountdownState => {
-  const now = Date.now()
-  const distance = Math.max(0, CAMPAIGN_START_DATE.getTime() - now)
-
-  const days = Math.floor(distance / MS_PER_DAY)
-  const hours = Math.floor((distance % MS_PER_DAY) / MS_PER_HOUR)
-  const minutes = Math.floor((distance % MS_PER_HOUR) / MS_PER_MINUTE)
-  const seconds = Math.floor((distance % MS_PER_MINUTE) / MS_PER_SECOND)
-
-  return {
-    days,
-    hours,
-    minutes,
-    seconds,
-    isComplete: distance === 0,
-  }
-}
-
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const [timeLeft, setTimeLeft] = useState<CountdownState>(() => calculateTimeDifference())
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -73,8 +34,8 @@ export default function Hero() {
     class Particle {
       x: number; y: number; vx: number; vy: number; radius: number; opacity: number; life: number;
       constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
+        this.x = Math.random() * canvas!.width
+        this.y = Math.random() * canvas!.height
         this.vx = (Math.random() - 0.5) * 2
         this.vy = (Math.random() - 0.5) * 2
         this.radius = Math.random() * 2 + 1
@@ -86,8 +47,8 @@ export default function Hero() {
         this.y += this.vy
         this.life -= 0.005
         this.opacity = Math.max(0, this.opacity - 0.01)
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1
+        if (this.x < 0 || this.x > canvas!.width) this.vx *= -1
+        if (this.y < 0 || this.y > canvas!.height) this.vy *= -1
       }
       draw(ctx: CanvasRenderingContext2D) {
         ctx.fillStyle = `rgba(165, 200, 88, ${this.opacity})`
@@ -98,6 +59,7 @@ export default function Hero() {
     }
 
     for (let i = 0; i < particleCount; i++) {
+      // @ts-ignore
       particles.push(new Particle())
     }
 
@@ -106,6 +68,7 @@ export default function Hero() {
 
       particles.forEach((particle, index) => {
         if (particle.life <= 0) {
+          // @ts-ignore
           particles[index] = new Particle()
         }
         particle.update()
@@ -125,23 +88,8 @@ export default function Hero() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setTimeLeft(calculateTimeDifference())
-    }, 1000)
-
-    return () => window.clearInterval(intervalId)
-  }, [])
-
-  const countdownItems = [
-    { label: "Ngày", value: String(timeLeft.days).padStart(2, "0") },
-    { label: "Giờ", value: String(timeLeft.hours).padStart(2, "0") },
-    { label: "Phút", value: String(timeLeft.minutes).padStart(2, "0") },
-    { label: "Giây", value: String(timeLeft.seconds).padStart(2, "0") },
-  ]
-
   return (
-    <section 
+    <section
       className="relative overflow-hidden min-h-screen flex flex-col justify-center items-center px-4"
     >
       <div className="absolute inset-0 z-0">
@@ -154,13 +102,13 @@ export default function Hero() {
           objectPosition="top"
         />
       </div>
-      
+
       <FallingPetals petalImageSrc="/animations/petal.png" numberOfPetals={40} />
-      
+
       <div className="absolute inset-0 bg-black/20 z-10" />
 
-      <canvas ref={canvasRef} className="absolute inset-0 z-10" /> 
-        
+      <canvas ref={canvasRef} className="absolute inset-0 z-10" />
+
       <div className="absolute inset-0 z-10">
         <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-[#FCE8E7] rounded-full mix-blend-multiply blur-3xl opacity-30 animate-float" />
         <div
@@ -173,7 +121,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative z-20 flex flex-col items-center text-center max-w-3xl space-y-6 py-20"> 
+      <div className="relative z-20 flex flex-col items-center text-center max-w-4xl space-y-8 py-20">
         <Image
           src="/new_title2.svg"
           alt="Xuân 2026 Logo"
@@ -182,41 +130,51 @@ export default function Hero() {
           className="mx-auto"
         />
 
-        <div className="flex flex-col sm:flex-row gap-4 mt-0.5 animate-fadeInUp" style={{ animationDelay: "0.3s" }}>
-          <Link href="#donate">
-            <Button className="group bg-[#A5C858] hover:bg-[#92B94F] text-white px-10 py-4 text-xl font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl animate-bounce-soft">
-              <span className="flex items-center gap-2">Gửi chút hơi ấm</span>
-            </Button>
-          </Link>
+        <div className="w-full max-w-2xl mx-auto mt-6 animate-fadeInUp" style={{ animationDelay: "0.2s" }}>
+          <div className="relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-8 shadow-2xl hover:bg-white/15 transition-colors duration-500">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-70" />
+            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-green-400/20 rounded-full blur-3xl" />
+            <div className="absolute -top-10 -left-10 w-32 h-32 bg-pink-400/20 rounded-full blur-3xl" />
 
-          {/* <Link href="#charity-support">
-            <Button className="border-2 border-[#A5C858] hover:bg-[#A5C858]/10 px-8 py-3 text-lg font-semibold rounded-lg transition-all duration-300 bg-white/10 backdrop-blur-sm text-white hover:text-white">
-              Ủng hộ
-            </Button>
-          </Link> */}
+            <div className="space-y-6 relative z-10">
+              <div className="space-y-3">
+                {/* <div className="inline-block px-3 py-1 rounded-full bg-green-500/20 border border-green-400/30 backdrop-blur-sm">
+                  <p className="text-xs md:text-sm uppercase tracking-[0.15em] text-green-50 font-semibold shadow-sm">
+                    Thông báo hoàn thành
+                  </p>
+                </div> */}
+
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow-lg leading-tight tracking-tight">
+                  Chiến dịch Xuân Tình Nguyện 2026 <br className="hidden sm:block" /> đã khép lại rực rỡ
+                </h2>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 text-base md:text-lg font-medium text-white/95 pt-1">
+                  <span className="opacity-90">vào ngày</span>
+                  <span className="bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 shadow-sm">31/01</span>
+                  <span className="opacity-90">&</span>
+                  <span className="bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 shadow-sm">01/02/2026</span>
+                </div>
+              </div>
+
+              <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+
+              <p className="text-lg md:text-xl text-white/95 font-light italic leading-relaxed drop-shadow-sm">
+                "Xin chân thành cảm ơn mọi sự đóng góp và đồng hành quý báu của các bạn!"
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="w-full max-w-3xl mt-8 space-y-4 animate-fadeInUp" style={{ animationDelay: "0.5s" }}>
-          <div className="flex items-center justify-center gap-2 text-white/90 text-xs uppercase tracking-[0.2em]">
-            <Timer className="size-4" />
-            <span>Đếm ngược tới ngày xuất phát</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {countdownItems.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl bg-white/10 border border-white/15 shadow-[0px_15px_35px_rgba(0,0,0,0.25)] backdrop-blur-md px-4 py-5 text-center text-white"
-              >
-                <p className="text-4xl font-semibold tracking-tight">{item.value}</p>
-                <p className="mt-2 text-xs uppercase tracking-[0.3em] text-white/70">{item.label}</p>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-white/80 tracking-wide">
-            {timeLeft.isComplete
-              ? "Chiến dịch Xuân Tình Nguyện 2026 đang diễn ra! Hãy cùng chung tay lan tỏa yêu thương bằng những ủng hộ của bạn."
-              : `Xuân Tình Nguyện 2026 sẽ xuất quân vào ngày ${CAMPAIGN_START_LABEL}-01/02/2026. Cùng đếm ngược nàooooooo!`}
-          </p>
+        <div className="flex flex-col sm:flex-row gap-4 mt-4 animate-fadeInUp" style={{ animationDelay: "0.4s" }}>
+          <Link href="#gallery">
+            <Button className="group bg-[#A5C858] hover:bg-[#92B94F] text-white px-8 py-6 text-lg font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+              <span className="flex items-center gap-2">
+                Cùng nhìn lại chiến dịch tại đây
+                <ArrowDown className="size-5 group-hover:animate-bounce" />
+              </span>
+            </Button>
+          </Link>
         </div>
       </div>
       <style>{`

@@ -1,3 +1,7 @@
+"use client"
+
+import { Check, Star, Heart, Sun, Leaf, Book, Gift, Home, MapPin } from "lucide-react";
+
 export default function Activities() {
   const leaf = "#A5C858";
   const peach = "#F5B1AC";
@@ -9,71 +13,115 @@ export default function Activities() {
   const activities = [
     {
       id: 1,
-      title: "Thắp sáng đường quê",
-      description: "Cải thiện điều kiện đi lại vào ban đêm tại địa bàn, đảm bảo an toàn cho người dân.",
-      icon: "💡",
+      title: "Trồng 52 cây vàng anh lá mít tại Nhà trưng bày chiến tích đồi A Biah.",
       color: leaf,
+      icon: <Leaf className="text-white" />,
     },
     {
       id: 2,
-      title: "Dự án xã hội",
-      description: "Tổ chức buổi tuyên truyền nhằm tăng cường nhận thức của trẻ em về các loại tệ nạn xã hội. Đồng thời, tổ chức nấu ăn cho các em ăn.",
-      icon: "📚",
+      title: "Sửa chữa sân bóng chuyền: thay 2 cột bóng, tặng 1 lưới, 2 bóng và sơn lại mặt sân.",
       color: softlime,
+      icon: <Check className="text-gray-700" />,
     },
     {
       id: 3,
-      title: "Đền ơn đáp nghĩa",
-      description: "Thăm gặp và tặng quà cho 5 hộ gia đình Mẹ Việt Nam Anh Hùng, Hội viên Hội Cựu Chiến binh, Cựu Thanh niên Xung phong có hoàn cảnh khó khăn. ",
-      icon: "❤️",
+      title: "Lắp đặt 10 cột đèn năng lượng mặt trời thắp sáng đường quê.",
       color: peach,
+      icon: <Sun className="text-white" />,
     },
     {
       id: 4,
-      title: "Mầm xanh tình nguyện",
-      description: "Xây dựng tuyến đường hoa trang trí cảnh quan phía trước và dọn dẹp vệ sinh khuôn viên tại Nghĩa Trang Liệt Sĩ địa phương.",
-      icon: "🌱",
+      title: "Trao bản bàn giao các công trình: Thắp sáng đường quê - Mầm xanh tình nguyện - Không gian thể thao.",
       color: rose,
+      icon: <Home className="text-gray-700" />,
     },
     {
       id: 5,
-      title: "Không gian thể thao",
-      description: "Xây dựng khu vui chơi, giao lưu thể thao cho người dân địa phương tại Nhà văn hóa thôn.",
-      icon: "⚽",
+      title: "Tặng quà cho 15 hộ gia đình có hoàn cảnh khó khăn.",
       color: sand,
+      icon: <Gift className="text-gray-700" />,
     },
     {
       id: 6,
-      title: "Đêm trao quà và giao lưu văn hóa, văn nghệ",
-      description: "Tổ chức đêm giao lưu văn hóa, văn nghệ giữa tình nguyện viên và người dân địa phương, tổ chức đêm hội cho các em thiếu nhi. Trao các suất quà hỗ trợ cho các gia đình có hoàn cảnh khó khăn cũng như các em nhỏ.",
-      icon: "🎁",
+      title: "Tặng quà cho Đồn Biên phòng và Đoàn xã A Lưới.",
       color: light,
+      icon: <Star className="text-yellow-500" />,
+    },
+    {
+      id: 7,
+      title: "Tham quan và nghe giảng về lịch sử địa chỉ đỏ nhà trưng bày chứng tích chiến tranh di tích lịch sử Đồi Abiah.",
+      color: "#E0F2FE", // Light Sky Blue
+      icon: <MapPin className="text-sky-600" />,
+    },
+    {
+      id: 8,
+      title: "Tặng 50 phần quà cho các em trẻ em vùng cao.",
+      color: "#F3E8FF", // Light Purple
+      icon: <Heart className="text-purple-500" />,
+    },
+    {
+      id: 9,
+      title: "Tặng 200 phần áo quần và hơn 50 gấu bông nhận quyên góp từ mọi người đến bà con A Lưới.",
+      color: "#FEF3C7", // Light Amber
+      icon: <Gift className="text-amber-600" />,
+    },
+    {
+      id: 10,
+      title: "Hoạt động vui chơi lồng ghép dạy học, làm thiệp, tập dân vũ cho các em.",
+      color: "#D1FAE5", // Light Emerald
+      icon: <Book className="text-emerald-600" />,
+    },
+    {
+      id: 11,
+      title: "Tổ chức đêm giao lưu văn hóa, văn nghệ giữa tình nguyện viên và người dân địa phương.",
+      color: "#FFEDD5", // Light Orange
+      icon: <Star className="text-orange-500" />,
     },
   ];
 
   return (
-    <section id="activities" className="py-16 md:py-24 px-4 bg-white">
+    <section id="activities" className="py-20 md:py-28 px-4 bg-gradient-to-b from-white to-gray-50/50">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-6xl md:text-5xl font-bold text-[#A5C858] mb-4">
-            Các hoạt động tình nguyện trong chiến dịch
+        <div className="text-center mb-16 space-y-4">
+          <div className="inline-block px-4 py-1.5 rounded-full bg-green-50 text-green-600 text-sm font-semibold mb-2">
+            Hành trình ý nghĩa
+          </div>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#A5C858] leading-tight">
+            Hoạt động nổi bật
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Hãy mở lòng đón nhận hành trình trọn vẹn của sự cho đi. Mỗi bước chân, mỗi hành động nhân ái của bạn là phép màu thầm lặng, là một bước đệm tạo nên sự thay đổi tích cực và sâu sắc cho cuộc sống.
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Mỗi hành động nhỏ góp phần tạo nên thay đổi lớn. Dưới đây là những dấu ấn chúng mình đã cùng nhau thực hiện trong chiến dịch.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 transition-all duration-30">
-          {activities.map((activity) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {activities.map((activity, index) => (
             <div
               key={activity.id}
-              style={{ backgroundColor: activity.color }}
-              className="p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border border-gray-200 
-                         transform hover:translate-y-[-4px] hover:scale-[1.01]"
+              className="group relative overflow-hidden rounded-3xl p-6 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white border border-gray-100"
             >
-              <div className="text-5xl mb-4">{activity.icon}</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">{activity.title}</h3>
-              <p className="text-gray-700 leading-relaxed">{activity.description}</p>
+              {/* Background accent */}
+              <div
+                className="absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-20 group-hover:scale-150 transition-transform duration-700 ease-out"
+                style={{ backgroundColor: activity.color }}
+              />
+
+              <div className="relative z-10 flex flex-col h-full">
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 shadow-sm group-hover:rotate-12 transition-transform duration-300"
+                  style={{ backgroundColor: activity.color }}
+                >
+                  {activity.icon}
+                </div>
+
+                <h3 className="text-lg font-semibold text-gray-800 leading-snug group-hover:text-gray-900 transition-colors">
+                  {activity.title}
+                </h3>
+
+                <div className="mt-auto pt-4 flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-x-2 group-hover:translate-x-0">
+                  <div className="w-8 h-1 rounded-full bg-gray-200" style={{ backgroundColor: activity.color }} />
+                </div>
+              </div>
             </div>
           ))}
         </div>
