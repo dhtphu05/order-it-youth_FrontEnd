@@ -77,6 +77,10 @@ export const searchPublicDonations = async (
     query.set("mssv", trimmedMssv)
   }
 
+  if (params.has_class) {
+    query.set("has_class", "true")
+  }
+
   const queryString = query.toString()
   if (queryString) {
     url.search = queryString

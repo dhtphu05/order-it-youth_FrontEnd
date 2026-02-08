@@ -6,43 +6,23 @@ import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Spinner } from "@/components/ui/spinner"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { searchPublicDonations } from "@/lib/api/donations"
 import type { DonationSearchParams, DonationSearchResponse } from "@/types/donation"
-
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0,
-  }).format(value)
-
-const formatDate = (date?: string | null) => {
-  if (!date) {
-    return "Chưa xác nhận"
-  }
-  const parsed = new Date(date)
-  if (Number.isNaN(parsed.getTime())) {
-    return "Chưa xác nhận"
-  }
-  return parsed.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  })
-}
 
 export default function DonationLedger() {
   const [ledgerParams, setLedgerParams] = useState<DonationSearchParams>({
     page: 1,
-    limit: 6,
+    limit: 20,
+    has_class: true,
   })
   const [ledgerResult, setLedgerResult] = useState<DonationSearchResponse | null>(null)
   const [ledgerLoading, setLedgerLoading] = useState(false)
@@ -58,7 +38,7 @@ export default function DonationLedger() {
     } catch (error) {
       console.error("[DonationLedger] Failed to load ledger", error)
       setLedgerError(
-        error instanceof Error ? error.message : "Không thể tải danh sách ủng hộ.",
+        error instanceof Error ? error.message : "Không thể tải danh sách.",
       )
       setLedgerResult(null)
     } finally {
@@ -80,14 +60,6 @@ export default function DonationLedger() {
     }))
   }
 
-  const handleChangeLimit = (nextLimit: number) => {
-    setLedgerParams((prev) => ({
-      ...prev,
-      page: 1,
-      limit: nextLimit,
-    }))
-  }
-
   const handleChangePage = (direction: "prev" | "next") => {
     setLedgerParams((prev) => {
       const currentPage = prev.page ?? 1
@@ -102,29 +74,31 @@ export default function DonationLedger() {
   const ledgerItems = ledgerResult?.data ?? []
   const currentPage = ledgerResult?.meta.page ?? ledgerParams.page ?? 1
   const totalPages = ledgerResult?.meta.pages ?? 1
+  const totalItems = ledgerResult?.meta.total ?? 0
 
   return (
     <section
       id="donation-ledger"
       className="py-20 px-4 bg-gradient-to-b from-[#f3f7ff] via-white to-[#fdfdfd]"
     >
-      <div className="max-w-5xl mx-auto space-y-10">
+      <div className="max-w-6xl mx-auto space-y-10">
         <div className="text-center space-y-4">
           <p className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#eef6ff] text-[#3f7ee8] text-sm font-semibold">
-            Sao kê minh bạch
+            Vinh danh
           </p>
-          <h2 className="text-4xl font-bold text-[#2d3a4a]">Danh sách ủng hộ</h2>
+          <h2 className="text-3xl md:text-3xl font-bold text-[#3f7ee8]">
+            Danh sách Tình Nguyện Viên Online Chiến Dịch Tình Nguyện Xuân 2026
+          </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Theo dõi các khoản quyên góp đã xác nhận. Thông tin số điện thoại được ẩn để bảo vệ quyền riêng tư.
+            Cảm ơn bạn đã ủng hộ một chút tấm lòng cho chiến dịch Xuân tình nguyện 2026 - Gùi Xuân Gieo Bản Nhỏ do LCĐ Khoa Công nghệ Thông tin tổ chức. Sự hỗ trợ và ủng hộ của bạn đã góp phần giúp các trẻ em nơi đây có một mùa Tết Nguyên Đán năm 2026 thật vui tươi, ấm áp, và trọn vẹn.
           </p>
         </div>
 
         <div className="rounded-3xl border border-[#e0e7ff] bg-[#f9fbff] p-6 shadow-inner space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-2">
-              <p className="text-sm uppercase tracking-wide text-[#7ba4ff]">Sao kê công khai</p>
+              <p className="text-sm uppercase tracking-wide text-[#7ba4ff]">Danh sách công khai</p>
               <p className="text-sm text-gray-600 max-w-md">
-                Chúng mình sẽ cập nhật danh sách ủng hộ vào lúc 18h hàng ngày để đảm bảo tính minh bạch và kịp thời. Cảm ơn bạn đã đồng hành cùng Xuân Tình Nguyện 2026!
               </p>
             </div>
             <form className="w-full sm:w-auto" onSubmit={handleLedgerSearch}>
@@ -137,6 +111,7 @@ export default function DonationLedger() {
                   placeholder="Nhập MSSV để tra cứu"
                   value={mssvQuery}
                   onChange={(event) => setMssvQuery(event.target.value)}
+                  className="bg-white"
                 />
                 <Button type="submit" variant="secondary">
                   <Search className="size-4 mr-2" />
@@ -146,44 +121,82 @@ export default function DonationLedger() {
             </form>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="ledger-limit">Số kết quả mỗi trang</Label>
-              <Select
-                value={String(ledgerParams.limit ?? 6)}
-                onValueChange={(value) => handleChangeLimit(Number(value))}
-              >
-                <SelectTrigger id="ledger-limit">
-                  <SelectValue placeholder="Chọn số kết quả" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[6, 9, 12].map((option) => (
-                    <SelectItem key={option} value={String(option)}>
-                      {option} kết quả
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div className="rounded-2xl border bg-white overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50/50">
+                  <TableRow>
+                    <TableHead className="w-[80px] text-center font-bold text-gray-700">STT</TableHead>
+                    <TableHead className="font-bold text-gray-700">Họ và tên</TableHead>
+                    <TableHead className="font-bold text-gray-700">MSSV</TableHead>
+                    <TableHead className="font-bold text-gray-700">Lớp</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {ledgerLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-32 text-center text-gray-500">
+                        <div className="flex items-center justify-center">
+                          <Spinner className="mr-2" />
+                          Đang tải danh sách...
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : ledgerItems.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-32 text-center text-gray-500">
+                        Không tìm thấy dữ liệu phù hợp.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    ledgerItems.map((item, index) => {
+                      const stt = (currentPage - 1) * (ledgerParams.limit ?? 20) + index + 1
+                      return (
+                        <TableRow key={item.id} className="hover:bg-blue-50/30 transition-colors">
+                          <TableCell className="text-center font-medium text-gray-500">
+                            {stt}
+                          </TableCell>
+                          <TableCell className="font-semibold text-gray-900">
+                            {item.student_name}
+                          </TableCell>
+                          <TableCell className="text-gray-600 font-mono">
+                            {item.mssv || "-"}
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            {item.student_class || "-"}
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })
+                  )}
+                </TableBody>
+              </Table>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="ledger-page">Trang hiện tại</Label>
-              <div id="ledger-page" className="flex items-center gap-3">
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
+            <div className="text-sm text-gray-500">
+              Hiển thị {ledgerItems.length > 0 ? (currentPage - 1) * (ledgerParams.limit ?? 20) + 1 : 0} - {Math.min(currentPage * (ledgerParams.limit ?? 20), totalItems)} trên tổng số {totalItems} kết quả
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1"
+                  size="sm"
                   onClick={() => handleChangePage("prev")}
                   disabled={currentPage <= 1 || ledgerLoading}
                 >
                   Trước
                 </Button>
-                <div className="text-sm text-gray-600 min-w-[120px] text-center">
+                <div className="text-sm font-medium px-2 min-w-[80px] text-center">
                   Trang {currentPage} / {totalPages}
                 </div>
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1"
+                  size="sm"
                   onClick={() => handleChangePage("next")}
                   disabled={currentPage >= totalPages || ledgerLoading}
                 >
@@ -192,43 +205,6 @@ export default function DonationLedger() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="space-y-4">
-          {ledgerLoading ? (
-            <div className="flex items-center justify-center py-12 text-sm text-gray-500">
-              <Spinner className="mr-2" />
-              Đang tải danh sách ủng hộ...
-            </div>
-          ) : ledgerError ? (
-            <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-              {ledgerError}
-            </div>
-          ) : ledgerItems.length === 0 ? (
-            <div className="text-center text-sm text-gray-500 py-12 border border-dashed rounded-2xl">
-              Chưa có ủng hộ được tìm thấy. Hãy thử điều chỉnh bộ lọc.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {ledgerItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl border border-gray-100 p-5 bg-white space-y-4 shadow-sm"
-                >
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="font-semibold text-gray-900">{item.student_name}</p>
-                    <p className="text-xs text-gray-500">
-                      Ngày chuyển: {formatDate(item.confirmed_at)}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <p className="text-xs uppercase tracking-wide text-gray-500">Số tiền</p>
-                    <p className="text-xl font-semibold text-gray-900">{formatCurrency(item.amount)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </section>

@@ -46,4 +46,5 @@ export interface DonationSearchParams {
   page?: number
   limit?: number
   mssv?: string
+  has_class?: boolean
 }

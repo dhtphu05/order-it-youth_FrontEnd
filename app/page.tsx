@@ -15,8 +15,8 @@ export default function Home() {
     <main className="min-h-screen from-blue-50 via-white to-pink-50">
       <Navigation />
       <Hero />
-      <CharitySupport/>
-      <DonationSection />
+      {/* <CharitySupport/> */}
+      {/* <DonationSection /> */}
       <DonationLedger />
 
 
