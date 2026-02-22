@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { Search } from "lucide-react"
+import { Search, Download } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { searchPublicDonations } from "@/lib/api/donations"
+import { searchPublicDonations, API_ROOT } from "@/lib/api/donations"
 import type { DonationSearchParams, DonationSearchResponse } from "@/types/donation"
 
 export default function DonationLedger() {
@@ -130,12 +130,13 @@ export default function DonationLedger() {
                     <TableHead className="font-bold text-gray-700">Họ và tên</TableHead>
                     <TableHead className="font-bold text-gray-700">MSSV</TableHead>
                     <TableHead className="font-bold text-gray-700">Lớp</TableHead>
+                    <TableHead className="font-bold text-gray-700 text-right">Chứng nhận</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {ledgerLoading ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="h-32 text-center text-gray-500">
+                      <TableCell colSpan={5} className="h-32 text-center text-gray-500">
                         <div className="flex items-center justify-center">
                           <Spinner className="mr-2" />
                           Đang tải danh sách...
@@ -144,7 +145,7 @@ export default function DonationLedger() {
                     </TableRow>
                   ) : ledgerItems.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="h-32 text-center text-gray-500">
+                      <TableCell colSpan={5} className="h-32 text-center text-gray-500">
                         Không tìm thấy dữ liệu phù hợp.
                       </TableCell>
                     </TableRow>
@@ -164,6 +165,18 @@ export default function DonationLedger() {
                           </TableCell>
                           <TableCell className="text-gray-600">
                             {item.student_class || "-"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-100/50 rounded-full"
+                              asChild
+                            >
+                              <a href={`${API_ROOT}/donations/${item.id}/certificate`} download>
+                                <Download className="size-4" />
+                              </a>
+                            </Button>
                           </TableCell>
                         </TableRow>
                       )

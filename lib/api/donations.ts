@@ -9,8 +9,8 @@ const DEFAULT_API_BASE_URL = "https://api.lcdkhoacntt-dut.live"
 
 const normalizeBaseUrl = (url: string) => url.replace(/\/+$/, "")
 
-const API_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_API_BASE_URL)
-const API_ROOT = `${API_BASE_URL}/api`
+export const API_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_API_BASE_URL)
+export const API_ROOT = `${API_BASE_URL}/api`
 
 const parseResponse = async (response: Response) => {
   const text = await response.text()
